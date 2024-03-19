@@ -1,1 +1,1 @@
-from .core import ProcessorPlatform, ProcessorRequest, Priority, SpeedType
+from .core import Job, Priority, ProcessorPlatform, ProcessorRequest, SpeedType

@@ -1,1 +1,8 @@
-from .processor import ProcessorPlatform, ProcessorRequest, Priority, SpeedType, SortedQueue
+from .job import Job
+from .processor import (
+    Priority,
+    ProcessorPlatform,
+    ProcessorRequest,
+    SortedQueue,
+    SpeedType,
+)
