@@ -43,7 +43,6 @@ class TestSortedQueue(unittest.TestCase):
 
     def test_pop(self):
         self.assertEqual(self.sq.pop(0), self.sorted_data[0])
-        print("hello")
 
     def test_index(self):
         for i, j in zip(self.sq, self.sorted_data):
