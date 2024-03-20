@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from itertools import count
 from typing import TYPE_CHECKING, Generator, Iterator, Optional
 
@@ -11,21 +12,50 @@ from .job import Job
 from .processor import ProcessorPlatform
 
 
+@dataclass(frozen=True, order=True)
+class TaskInfo:
+    id: int
+    wcet: SimTime
+    deadline: SimTime
+    period: SimTime
+
+    @property
+    def utilization(self) -> float:
+        return self.wcet / self.period
+
+
 class GenericTask(Process):
 
-    def __init__(self, id: int, env: Environment, platform: ProcessorPlatform):
-        super().__init__(env, self.create_job())
-        self.id: int = id
+    def __init__(self, platform: ProcessorPlatform, taskinfo: TaskInfo):
+        super().__init__(platform._env, self.create_job())
+        self.task_info = taskinfo
         self.platform: ProcessorPlatform = platform
         self._job_id_generator: Iterator = count()
         self.jobs: list[Job] = []
 
-        self.wcet: SimTime
+    @property
+    def id(self):
+        return self.task_info.id
+
+    @property
+    def wcet(self) -> SimTime:
         """Worst-Case Execution Time."""
-        self.deadline: SimTime
+        return self.task_info.wcet
+
+    @property
+    def deadline(self) -> SimTime:
         """Relative deadline"""
-        self.period: SimTime
+        return self.task_info.deadline
+
+    @property
+    def period(self) -> SimTime:
         """Job arrival cycle or minimum interarrival time"""
+        return self.task_info.period
+
+    @property
+    def utilization(self) -> float:
+        """Job arrival cycle or minimum interarrival time"""
+        return self.task_info.utilization
 
     @property
     def job_count(self) -> int:
