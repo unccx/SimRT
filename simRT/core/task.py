@@ -83,4 +83,4 @@ class PeriodicTask(GenericTask):
         while True:
             job = Job(self)
             self.jobs.append(job)
-            yield self.env.timeout(self.deadline)
+            yield self.env.timeout(self.period)
