@@ -1,4 +1,5 @@
 from .job import Job
+from .model import Simulator
 from .processor import (
     Priority,
     ProcessorPlatform,
@@ -6,3 +7,4 @@ from .processor import (
     SortedQueue,
     SpeedType,
 )
+from .task import GenericTask, PeriodicTask
