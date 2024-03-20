@@ -1,10 +1,21 @@
 import math
 import unittest
+from unittest import mock
 
 import simpy
 
 import simRT
-from simRT.core.task import GenericTask, PeriodicTask
+from simRT.core.task import GenericTask, PeriodicTask, TaskInfo
+
+
+class TestTaskInfo(unittest.TestCase):
+
+    def test_init(self):
+        task_info = TaskInfo(id=2, wcet=10, deadline=15, period=20)
+        self.assertEqual(task_info.utilization, 10 / 20)
+        self.assertEqual(task_info.wcet, 10)
+        self.assertEqual(task_info.deadline, 15)
+        self.assertEqual(task_info.period, 20)
 
 
 class TestPeriodicTask(unittest.TestCase):
@@ -15,17 +26,15 @@ class TestPeriodicTask(unittest.TestCase):
 
         self.speed_list = speed_list
         self.platform = simRT.ProcessorPlatform(self.env, self.speed_list)
-        # triplets = [(2, 5, 5), (1, 2, 2), (3, 4, 4), (2, 3, 3), (1, 6, 6)]
-        # triplets = [(2, 10, 10), (1, 10, 10), (10, 11, 11)]
-        # triplets = [(25, 50, 50), (30, 75, 75)]
-        self.hyper_period = 1
-        for triplet in triplets:
-            self.hyper_period = math.lcm(self.hyper_period, triplet[2])
 
+        self.hyper_period = 1
         self.tasks = []
         for i, triplet in enumerate(triplets):
-            task = PeriodicTask(id=i, env=self.env, platform=self.platform)
-            task.wcet, task.deadline, task.period = triplet
+            self.hyper_period = math.lcm(self.hyper_period, triplet[2])
+            taskinfo = mock.Mock()
+            taskinfo.id = i
+            taskinfo.wcet, taskinfo.deadline, taskinfo.period = triplet
+            task = PeriodicTask(platform=self.platform, taskinfo=taskinfo)
             self.tasks.append(task)
 
     def test_miss_deadline(self):
