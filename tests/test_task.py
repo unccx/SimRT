@@ -11,11 +11,17 @@ from simRT.core.task import GenericTask, PeriodicTask, TaskInfo
 class TestTaskInfo(unittest.TestCase):
 
     def test_init(self):
-        task_info = TaskInfo(id=2, wcet=10, deadline=15, period=20)
+        task_info = TaskInfo(id=2, type=PeriodicTask, wcet=10, deadline=15, period=20)
         self.assertEqual(task_info.utilization, 10 / 20)
         self.assertEqual(task_info.wcet, 10)
         self.assertEqual(task_info.deadline, 15)
         self.assertEqual(task_info.period, 20)
+
+        self.env = simpy.Environment()
+        self.platform = simRT.ProcessorPlatform(self.env)
+
+        task = task_info.task_from_info(self.platform)
+        self.assertIsInstance(task, PeriodicTask)
 
 
 class TestPeriodicTask(unittest.TestCase):

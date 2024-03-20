@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import count
-from typing import TYPE_CHECKING, Generator, Iterator, Optional
+from typing import TYPE_CHECKING, Generator, Iterator, Optional, Type
 
 import simpy
 from simpy import Environment, Process
@@ -15,6 +15,7 @@ from .processor import ProcessorPlatform
 @dataclass(frozen=True, order=True)
 class TaskInfo:
     id: int
+    type: Type[GenericTask]
     wcet: SimTime
     deadline: SimTime
     period: SimTime
@@ -22,6 +23,11 @@ class TaskInfo:
     @property
     def utilization(self) -> float:
         return self.wcet / self.period
+
+    def task_from_info(self, platform) -> GenericTask:
+        if self.type is PeriodicTask:
+            return self.type(platform, self)
+        assert False, "The current type is only PeriodicTask"
 
 
 class GenericTask(Process):
