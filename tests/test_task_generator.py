@@ -26,7 +26,8 @@ class TestTaskGenerator(unittest.TestCase):
 
     def test_UScaling_algorithm(self):
         sys_u = 0.7
-        taskinfos = self.task_gen.UScaling_algorithm(sys_u, 20)
+        task_utilization_list = self.task_gen.UScaling_algorithm(sys_u, 20)
+        taskinfos = self.task_gen.generate_task(task_utilization_list)
 
         sys_u_gen = (
             sum(taskinfo.utilization for taskinfo in taskinfos) / self.task_gen.S_m

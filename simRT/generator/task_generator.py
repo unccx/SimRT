@@ -32,7 +32,7 @@ class TaskGenerator:
     def S_m(self):
         return self.sum_of_processor_speeds
 
-    def generate_task(self, task_utilization_list: list[float]) -> Sequence[TaskInfo]:
+    def generate_task(self, task_utilization_list: Sequence[float]) -> list[TaskInfo]:
         """
         根据输入的利用率列表返回任务集
         输入的利用率列表的利用率之和不要求小于等于1
@@ -59,9 +59,9 @@ class TaskGenerator:
 
     def UScaling_algorithm(
         self, system_utilization: float, num_task: int
-    ) -> Sequence[TaskInfo]:
+    ) -> list[float]:
         """
-        输入系统利用率和任务数量根据 UScaling 算法生成一系列利用率（利用率之和可以大于1）
+        输入系统利用率（在(0, 1]中）和任务数量根据 UScaling 算法生成一系列利用率（利用率之和可以大于1）
         """
         assert (
             system_utilization > 0 and system_utilization <= 1
@@ -74,4 +74,4 @@ class TaskGenerator:
 
         factor = taskset_utilization / sum(task_utilization_list)
         task_utilization_list = [task_u * factor for task_u in task_utilization_list]
-        return self.generate_task(task_utilization_list)
+        return task_utilization_list
