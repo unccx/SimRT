@@ -13,6 +13,7 @@ class TestTaskInfo(unittest.TestCase):
     def test_init(self):
         task_info = TaskInfo(id=2, type=PeriodicTask, wcet=10, deadline=15, period=20)
         self.assertEqual(task_info.utilization, 10 / 20)
+        self.assertEqual(task_info.density, 10 / 15)
         self.assertEqual(task_info.wcet, 10)
         self.assertEqual(task_info.deadline, 15)
         self.assertEqual(task_info.period, 20)

@@ -24,6 +24,10 @@ class TaskInfo:
     def utilization(self) -> float:
         return self.wcet / self.period
 
+    @property
+    def density(self) -> float:
+        return self.wcet / self.deadline
+
     def task_from_info(self, platform) -> GenericTask:
         if self.type is PeriodicTask:
             return self.type(platform, self)
