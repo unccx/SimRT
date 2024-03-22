@@ -44,6 +44,6 @@ class Schedulability:
         )
 
         mu = processors.S_m - lambda_pi * varphi_max
-        v = max([l for l in range(len(speed_list)) if sum(speed_list[l:]) < mu])
+        v = max([l for l in range(1, len(speed_list) + 1) if sum(speed_list[l:]) < mu])
 
         return mu - v * varphi_max >= Schedulability.LOAD(Gamma)
