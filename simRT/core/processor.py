@@ -165,18 +165,18 @@ class ProcessorPlatform(Resource):
     def __init__(
         self,
         env: Environment,
-        processors: Optional[PlatformInfo | Sequence[SpeedType]] = None,
+        processorinfos: Optional[PlatformInfo | Sequence[SpeedType]] = None,
     ):
-        if processors is None:
+        if processorinfos is None:
             self.platform_info = PlatformInfo()
-        elif isinstance(processors, Sequence):
-            self.platform_info = PlatformInfo(list(processors))
-        elif isinstance(processors, PlatformInfo):
-            self.platform_info = processors
-        elif processors is None:
+        elif isinstance(processorinfos, Sequence):
+            self.platform_info = PlatformInfo(list(processorinfos))
+        elif isinstance(processorinfos, PlatformInfo):
+            self.platform_info = processorinfos
+        elif processorinfos is None:
             self.platform_info = PlatformInfo()
         else:
-            assert False, f"processorsinfo type is not {type(processors)}"
+            assert False, f"processorsinfo type is not {type(processorinfos)}"
 
         super().__init__(env, capacity=len(self.speed_list))
         self.users: SortedQueue = SortedQueue(maxlen=len(self.speed_list))
