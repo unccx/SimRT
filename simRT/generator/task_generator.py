@@ -28,7 +28,7 @@ class TaskGenerator:
         elif platform_info is None:
             self.platform_info = PlatformInfo()
         else:
-            assert False, f"processorsinfo type is not {type(platform_info)}"
+            assert False, f"platform_info type is not {type(platform_info)}"
 
         self.task_type = task_type
         self.period_bound = period_bound
