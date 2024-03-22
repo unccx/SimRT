@@ -4,7 +4,7 @@ from itertools import count
 from random import randint, random, uniform
 from typing import Callable, Optional, Sequence
 
-from ..core.processor import PlatformInfo
+from ..core.processor import PlatformInfo, SpeedType
 from ..core.task import GenericTask, TaskInfo
 
 Taskset = list[TaskInfo]
@@ -16,12 +16,22 @@ class TaskGenerator:
         self,
         task_type: type[GenericTask],
         period_bound: tuple[int, int],
-        platform_info: PlatformInfo,
+        platform_info: Optional[PlatformInfo | Sequence[SpeedType]] = None,
         implicit_deadline: bool = True,
     ) -> None:
+        if platform_info is None:
+            self.platform_info = PlatformInfo()
+        elif isinstance(platform_info, Sequence):
+            self.platform_info = PlatformInfo(list(platform_info))
+        elif isinstance(platform_info, PlatformInfo):
+            self.platform_info = platform_info
+        elif platform_info is None:
+            self.platform_info = PlatformInfo()
+        else:
+            assert False, f"processorsinfo type is not {type(platform_info)}"
+
         self.task_type = task_type
         self.period_bound = period_bound
-        self.platform_info = platform_info
         self.implicit_deadline = implicit_deadline
 
     def generate_taskset(
