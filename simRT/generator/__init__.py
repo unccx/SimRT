@@ -1,1 +1,1 @@
-from .task_generator import TaskGenerator
+from .task_generator import TaskGenerator, Taskset

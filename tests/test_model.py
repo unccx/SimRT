@@ -30,7 +30,7 @@ class TestSimulator(unittest.TestCase):
         taskinfos = [
             TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
         ]
-        self.sim = Simulator(taskinfos, speed_list=[1])
+        self.sim = Simulator(taskinfos)
 
         self.sim.run(until=self.sim.hyper_period - 10)
         self.assertEqual(self.sim.env.now, self.sim.hyper_period - 10)
@@ -43,7 +43,7 @@ class TestSimulator(unittest.TestCase):
         taskinfos = [
             TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
         ]
-        self.sim = Simulator(taskinfos, speed_list=[1])
+        self.sim = Simulator(taskinfos)
 
         meet_deadline = self.sim.run()
         self.assertTrue(meet_deadline)
@@ -53,7 +53,7 @@ class TestSimulator(unittest.TestCase):
         taskinfos = [
             TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
         ]
-        self.sim = Simulator(taskinfos, speed_list=[1, 0.5])
+        self.sim = Simulator(taskinfos, processorinfos=[1, 0.5])
 
         meet_deadline = self.sim.run()
         self.assertFalse(meet_deadline)
