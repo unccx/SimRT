@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bisect import bisect_left, bisect_right
-from types import TracebackType
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional, Sequence, Type
 
 from simpy import Environment, Interrupt, Resource
@@ -126,6 +126,35 @@ class ProcessorRelease(Release):
         super().__init__(resource, request)
 
 
+@dataclass(frozen=True, order=True)
+class PlatformInfo:
+    speed_list: list[SpeedType] = field(default_factory=list)
+
+    def __post_init__(self):
+        if len(self.speed_list) == 0:
+            self.speed_list.append(1)
+        self.speed_list.sort(reverse=True)  # 速度降序排列
+
+        if self.speed_list[-1] <= 0:
+            raise ValueError("Processor speed must be > 0.")
+
+    @property
+    def descending(self):
+        return reversed(self.speed_list)
+
+    @property
+    def S_m(self):
+        return sum(self.speed_list)
+
+    @property
+    def fastest_speed(self):
+        return self.speed_list[0]
+
+    @property
+    def is_homogeneous(self):
+        return self.speed_list[0] == self.speed_list[-1]
+
+
 class ProcessorPlatform(Resource):
 
     PutQueue = SortedQueue
@@ -133,18 +162,30 @@ class ProcessorPlatform(Resource):
     GetQueue = list
     """Queue of pending *get* requests."""
 
-    def __init__(self, env: Environment, speed_list: Sequence[SpeedType] = [1]):
-        self.speed_list: list[SpeedType] = sorted(
-            speed_list, reverse=True
-        )  # 速度降序排列
-
-        if self.speed_list[-1] <= 0:
-            raise ValueError("Processor speed must be > 0.")
+    def __init__(
+        self,
+        env: Environment,
+        processors: Optional[PlatformInfo | Sequence[SpeedType]] = None,
+    ):
+        if processors is None:
+            self.platform_info = PlatformInfo()
+        elif isinstance(processors, Sequence):
+            self.platform_info = PlatformInfo(list(processors))
+        elif isinstance(processors, PlatformInfo):
+            self.platform_info = processors
+        elif processors is None:
+            self.platform_info = PlatformInfo()
+        else:
+            assert False, f"processorsinfo type is not {type(processors)}"
 
         super().__init__(env, capacity=len(self.speed_list))
         self.users: SortedQueue = SortedQueue(maxlen=len(self.speed_list))
         """List of :class:`ProcessorRequest` events for the processes that are currently
         using the resource."""
+
+    @property
+    def speed_list(self):
+        return self.platform_info.speed_list
 
     if TYPE_CHECKING:
 
