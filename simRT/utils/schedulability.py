@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 
 from simpy.core import SimTime
 
-from simRT.core.processor import SpeedType
+from simRT.core.processor import PlatformInfo, SpeedType
 from simRT.core.task import TaskInfo
 
 
@@ -28,21 +28,22 @@ class Schedulability:
         return max(load)
 
     @staticmethod
-    def G_EDF_sufficient_test(Gamma: Sequence[TaskInfo], speed_list: list[SpeedType]):
+    def G_EDF_sufficient_test(Gamma: Sequence[TaskInfo], processors: PlatformInfo):
         """
         Sufficient test for multi-core Global-EDF.
         """
-        assert len(speed_list) > 1, "This sufficient test is for multi-core platforms"
-        speed_list = sorted(speed_list, reverse=True)  # descending sort
+        assert (
+            len(processors.speed_list) > 1
+        ), "This sufficient test is for multi-core platforms"
+        speed_list = list(processors.descending)
 
-        S_m = sum(speed_list)
         varphi_max = max(tau.density for tau in Gamma)
 
         lambda_pi = max(
             [sum(speed_list[i:]) / speed_list[i] for i in range(1, len(speed_list))]
         )
 
-        mu = S_m - lambda_pi * varphi_max
+        mu = processors.S_m - lambda_pi * varphi_max
         v = max([l for l in range(len(speed_list)) if sum(speed_list[l:]) < mu])
 
         return mu - v * varphi_max >= Schedulability.LOAD(Gamma)
