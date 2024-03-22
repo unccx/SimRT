@@ -4,7 +4,43 @@ import simpy
 from simpy.core import SimTime
 from simpy.resources.resource import Preempted, Release, Request
 
-from simRT.core import ProcessorPlatform, ProcessorRequest, SortedQueue
+from simRT.core import PlatformInfo, ProcessorPlatform, ProcessorRequest, SortedQueue
+
+
+class TestPlatformInfo(unittest.TestCase):
+    def setUp(self) -> None:
+        self.platforminfos: list[PlatformInfo] = []
+        self.platforminfos.append(PlatformInfo())
+        self.platforminfos.append(PlatformInfo([1, 3, 2]))
+        self.platforminfos.append(PlatformInfo([]))
+        self.platforminfos.append(PlatformInfo())
+        self.platforminfos.append(PlatformInfo([1, 1, 1]))
+
+    def test_init(self):
+        self.assertIsNot(self.platforminfos[0], self.platforminfos[-1])
+        self.assertIsNot(
+            self.platforminfos[0].speed_list, self.platforminfos[-1].speed_list
+        )
+        self.assertEqual(self.platforminfos[1].speed_list, [3, 2, 1])
+        self.assertEqual(self.platforminfos[0].speed_list, [1])
+        self.assertEqual(self.platforminfos[2].speed_list, [1])
+
+        with self.assertRaises(ValueError):
+            PlatformInfo([-1, 0, 1])
+
+    def test_S_m(self):
+        self.assertEqual(self.platforminfos[0].S_m, 1)
+        self.assertEqual(self.platforminfos[1].S_m, 6)
+
+    def test_descending(self):
+        self.assertEqual(list(self.platforminfos[1].descending), [1, 2, 3])
+
+    def test_fastest_speed(self):
+        self.assertEqual(self.platforminfos[1].fastest_speed, 3)
+
+    def test_is_homogeneous(self):
+        self.assertFalse(self.platforminfos[1].is_homogeneous)
+        self.assertTrue(self.platforminfos[4].is_homogeneous)
 
 
 class TestSortedQueue(unittest.TestCase):
@@ -120,10 +156,6 @@ class TestProcessorPlatform(unittest.TestCase):
     def test_set_speed(self):
         for idx, speed in enumerate(sorted(self.speed_list, reverse=True)):
             self.assertEqual(self.platform.speed_list[idx], speed)
-
-        error_speed_list = [-1, 0, 1]
-        with self.assertRaises(ValueError):
-            ProcessorPlatform(self.env, error_speed_list)
 
     def test_out_of_order_speed_list(self):
         self.assertEqual(

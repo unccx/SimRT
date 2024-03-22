@@ -4,17 +4,23 @@ from typing import Optional, Sequence
 import simpy
 from simpy.core import SimTime
 
-from .processor import ProcessorPlatform, SpeedType
+from .processor import PlatformInfo, ProcessorPlatform, SpeedType
 from .task import GenericTask, TaskInfo
 
 
 class Simulator:
 
     def __init__(
-        self, taskinfos: Sequence[TaskInfo], speed_list: list[SpeedType] = [1]
+        self,
+        taskinfos: Sequence[TaskInfo],
+        processors: Optional[PlatformInfo | Sequence[SpeedType]] = None,
     ) -> None:
+        """
+        taskinfos 任务集合
+        processors 处理器集合，如果为 None 则默认为单处理器
+        """
         self.env = simpy.Environment()
-        self.platform = ProcessorPlatform(self.env, speed_list)
+        self.platform = ProcessorPlatform(self.env, processors)
         self.tasks: list[GenericTask] = []
         self._hyper_period = 1
 
@@ -31,6 +37,9 @@ class Simulator:
 
     @property
     def hyper_period(self):
+        """
+        返回任务周期的最小公倍数
+        """
         return self._hyper_period
 
     def run(self, until: Optional[SimTime] = None) -> bool:
@@ -40,6 +49,8 @@ class Simulator:
             else:
                 self.env.run(until=until)
         except simpy.Interrupt as ir:
+            # 在模拟调度期间错过任务的 deadline
             return False
 
+        # 在模拟调度期间满足所有任务的 deadline
         return True
