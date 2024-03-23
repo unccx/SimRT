@@ -3,6 +3,7 @@ from typing import Optional, Sequence
 
 import simpy
 from simpy.core import SimTime
+from tqdm import trange
 
 from .processor import PlatformInfo, ProcessorPlatform, SpeedType
 from .task import GenericTask, TaskInfo
@@ -42,10 +43,13 @@ class Simulator:
         """
         return self._hyper_period
 
-    def run(self, until: Optional[SimTime] = None) -> bool:
+    def run(self, until: Optional[SimTime] = None, show_progress: bool = False) -> bool:
         try:
             if until is None or until > self.hyper_period:
-                self.env.run(until=self.hyper_period)
+                until = self.hyper_period
+            if show_progress:
+                for i in trange(1, math.ceil(until) + 1, desc="Processing"):
+                    self.env.run(until=i)
             else:
                 self.env.run(until=until)
         except simpy.Interrupt as ir:
