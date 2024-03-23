@@ -63,13 +63,13 @@ class TaskGenerator:
 
         return task_sets
 
-    def generate_task(self, task_utilization_list: Sequence[float]) -> list[TaskInfo]:
+    def generate_task(self, taskset_utilizations: Sequence[float]) -> list[TaskInfo]:
         """
         根据输入的利用率列表返回任务集
         输入的利用率列表的利用率之和不要求小于等于1
         """
         taskinfos = []
-        for task_u in task_utilization_list:
+        for task_u in taskset_utilizations:
             assert (
                 task_u <= self.platform_info.fastest_speed
             ), "Task utilization must be less than or equal to fastest core speed"
