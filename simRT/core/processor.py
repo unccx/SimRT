@@ -139,7 +139,10 @@ class PlatformInfo:
             raise ValueError("Processor speed must be > 0.")
 
     @property
-    def descending(self):
+    def ascending(self):
+        """
+        Iterate speed_list in ascending order
+        """
         return reversed(self.speed_list)
 
     @property
