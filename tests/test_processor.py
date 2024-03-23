@@ -33,7 +33,7 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertEqual(self.platforminfos[1].S_m, 6)
 
     def test_descending(self):
-        self.assertEqual(list(self.platforminfos[1].descending), [1, 2, 3])
+        self.assertEqual(list(self.platforminfos[1].ascending), [1, 2, 3])
 
     def test_fastest_speed(self):
         self.assertEqual(self.platforminfos[1].fastest_speed, 3)
