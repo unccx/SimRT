@@ -48,7 +48,9 @@ class Simulator:
             if until is None or until > self.hyper_period:
                 until = self.hyper_period
             if show_progress:
-                for i in trange(1, math.ceil(until) + 1, desc="Processing"):
+                for i in trange(
+                    1, math.ceil(until) + 1, 100, desc="Processing", leave=False
+                ):
                     self.env.run(until=i)
             else:
                 self.env.run(until=until)
