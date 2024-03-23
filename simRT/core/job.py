@@ -55,9 +55,16 @@ class Job(simpy.Process):
             # Retry the job until it is done.
             prio = self.absolute_deadline  # EDF
             with self.platform.request(priority=prio) as req:
+                # 等待 req 申请得到处理器核心，即使是在上一行 with 代码中
+                # request 占有处理器核心，也需要等待其他 process 的 request
+                # 留下优先级最高的 req
                 try:
                     yield req
                 except simpy.Interrupt as ir:
+                    # 在同一时刻先占有核心的请求可能会被优先级更高的请求挤出
+                    # 处理器平台，需要重新请求处理器核心
+                    # 也可能只是 req 在处理器占有队列（users）中的位置变化而被中断
+                    # 这种情况不需要重新请求处理器核心
                     if not req.is_on_platform:
                         continue
 
@@ -66,6 +73,8 @@ class Job(simpy.Process):
                 if self._start_time is None:
                     self._start_time = self.env.now
 
+                # 只要没有被挤出处理器占有队列（users）并且剩余执行量还大于0，就继续执行
+                # 但是需要重新确定 req 所占有的核心速度
                 while self.cpu.is_on_platform and self.remaining_execution > 0:
                     assert self.cpu.speed is not None
                     execution_speed: SimTime = self.cpu.speed
@@ -80,6 +89,7 @@ class Job(simpy.Process):
                             self.env.now - start
                         ) * execution_speed
 
+                    # 记录 Job 在不同核心的执行历史
                     log = {
                         "arrival": self.arrival_time,
                         "start": start,
@@ -100,7 +110,7 @@ class Job(simpy.Process):
         self._end_time = self.env.now
 
         if self.env.now > self.absolute_deadline:
-            # 这个 job 超出 deadline
+            # Job 执行完成的时间错过 Job 的绝对期限，中断模拟
             self.task.interrupt(
                 f"{self.id} miss deadline at [{self.absolute_deadline}]"
             )
