@@ -1,5 +1,5 @@
 import math
-import re
+import time
 from math import floor
 from typing import Optional, Sequence
 
@@ -21,7 +21,7 @@ class Schedulability:
     def LOAD(Gamma: Sequence[TaskInfo]):
         hyper_period = math.lcm(*[math.ceil(tau.period) for tau in Gamma])
         load = []
-        for delta_t in range(1, hyper_period):
+        for delta_t in range(1, hyper_period + 1):
             load.append(
                 sum(Schedulability.DBF(tau, delta_t) for tau in Gamma) / delta_t
             )
@@ -35,15 +35,15 @@ class Schedulability:
         assert (
             len(processors.speed_list) > 1
         ), "This sufficient test is for multi-core platforms"
-        speed_list = list(processors.descending)
+        speed_list = processors.speed_list
 
         varphi_max = max(tau.density for tau in Gamma)
-
         lambda_pi = max(
-            [sum(speed_list[i:]) / speed_list[i] for i in range(1, len(speed_list))]
+            sum(speed_list[i + 1 :]) / speed_list[i]
+            for i in range(0, len(speed_list) - 1)
         )
-
         mu = processors.S_m - lambda_pi * varphi_max
-        v = max([l for l in range(1, len(speed_list) + 1) if sum(speed_list[l:]) < mu])
+        v = max([i + 1 for i in range(0, len(speed_list)) if sum(speed_list[i:]) < mu])
+        load = Schedulability.LOAD(Gamma)
 
-        return mu - v * varphi_max >= Schedulability.LOAD(Gamma)
+        return mu - v * varphi_max >= load
