@@ -8,4 +8,4 @@ from .processor import (
     SortedQueue,
     SpeedType,
 )
-from .task import GenericTask, PeriodicTask
+from .task import GenericTask, PeriodicTask, TaskInfo

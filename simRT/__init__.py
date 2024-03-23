@@ -8,5 +8,6 @@ from .core import (
     ProcessorRequest,
     Simulator,
     SpeedType,
+    TaskInfo,
 )
 from .utils import Schedulability
