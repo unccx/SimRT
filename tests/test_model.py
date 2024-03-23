@@ -53,7 +53,7 @@ class TestSimulator(unittest.TestCase):
         taskinfos = [
             TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
         ]
-        self.sim = Simulator(taskinfos, processorinfos=[1, 0.5])
+        self.sim = Simulator(taskinfos, platform_info=[1, 0.5])
 
         meet_deadline = self.sim.run()
         self.assertFalse(meet_deadline)

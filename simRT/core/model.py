@@ -14,14 +14,14 @@ class Simulator:
     def __init__(
         self,
         taskinfos: Sequence[TaskInfo],
-        processorinfos: Optional[PlatformInfo | Sequence[SpeedType]] = None,
+        platform_info: Optional[PlatformInfo | Sequence[SpeedType]] = None,
     ) -> None:
         """
         taskinfos 任务集合
         processors 处理器集合，如果为 None 则默认为单处理器
         """
         self.env = simpy.Environment()
-        self.platform = ProcessorPlatform(self.env, processorinfos)
+        self.platform = ProcessorPlatform(self.env, platform_info)
         self.tasks: list[GenericTask] = []
         self._hyper_period = 1
 
