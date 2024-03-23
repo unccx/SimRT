@@ -29,7 +29,7 @@ class Simulator:
             self.add_task(taskinfo)
 
     def add_task(self, taskinfo: TaskInfo) -> None:
-        self.tasks.append(taskinfo.task_from_info(self.platform))
+        self.tasks.append(taskinfo.as_task(self.platform))
         self._hyper_period = math.lcm(self._hyper_period, math.ceil(taskinfo.period))
 
     @property

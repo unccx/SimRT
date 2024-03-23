@@ -21,7 +21,7 @@ class TestTaskInfo(unittest.TestCase):
         self.env = simpy.Environment()
         self.platform = simRT.ProcessorPlatform(self.env)
 
-        task = task_info.task_from_info(self.platform)
+        task = task_info.as_task(self.platform)
         self.assertIsInstance(task, PeriodicTask)
 
 

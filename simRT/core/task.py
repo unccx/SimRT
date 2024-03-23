@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from itertools import count
 from typing import TYPE_CHECKING, Generator, Iterator, Optional, Type
 
-import simpy
 from simpy import Environment, Process
 from simpy.core import SimTime
 
@@ -28,7 +27,10 @@ class TaskInfo:
     def density(self) -> float:
         return self.wcet / self.deadline
 
-    def task_from_info(self, platform) -> GenericTask:
+    def as_task(self, platform) -> GenericTask:
+        """
+        Generate Task instance from taskinfo
+        """
         if self.type is PeriodicTask:
             return self.type(platform, self)
         assert False, "The current type is only PeriodicTask"
@@ -40,7 +42,7 @@ class GenericTask(Process):
         super().__init__(platform._env, self.create_job())
         self.task_info = taskinfo
         self.platform: ProcessorPlatform = platform
-        self._job_id_generator: Iterator = count()
+        self._job_id_generator: Iterator = count()  # 自增产生 job_id
         self.jobs: list[Job] = []
 
     @property
