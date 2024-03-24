@@ -72,6 +72,8 @@ class TaskGenerator:
                 task_u <= self.platform_info.fastest_speed
             ), "Task utilization must be less than or equal to fastest core speed"
 
+            assert task_u > 0, "Task utilization must be greater than 0"
+
             period = randint(*self.period_bound)
             wcet = period * task_u
 
