@@ -11,7 +11,7 @@ from .job import Job
 from .processor import ProcessorPlatform
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, eq=True)
 class TaskInfo:
     id: int
     type: Type[GenericTask]
