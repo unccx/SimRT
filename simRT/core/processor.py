@@ -176,8 +176,6 @@ class ProcessorPlatform(Resource):
             self.platform_info = PlatformInfo(list(platform_info))
         elif isinstance(platform_info, PlatformInfo):
             self.platform_info = platform_info
-        elif platform_info is None:
-            self.platform_info = PlatformInfo()
         else:
             assert False, f"processorsinfo type is not {type(platform_info)}"
 
