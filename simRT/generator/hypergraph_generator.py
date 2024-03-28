@@ -50,6 +50,7 @@ class TaskHypergraphGenerator:
         self.data_path: Path = (
             Path(f"./data/{self.data_id}") if data_path is None else data_path
         )
+        self.data_path.mkdir(parents=True, exist_ok=True)
 
         self.hg_info.save_as_json(self.data_path / "config.json")
         self.task_db = TaskStorage(self.data_path / "data.sqlite")
@@ -146,7 +147,9 @@ class TaskHypergraphGenerator:
         sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
         if db_path is not None:
             task_db = TaskStorage(db_path)
-            task_db.insert_taskset(taskset, ns_result, sufficient)
+            taskset_u = sum(task.utilization for task in taskset)
+            sys_u = taskset_u / platform_info.S_m
+            task_db.insert_taskset(taskset, ns_result, sufficient, sys_u)
             task_db.commit()
         return taskset, ns_result, sufficient
 

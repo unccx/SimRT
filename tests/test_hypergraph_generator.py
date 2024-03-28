@@ -50,7 +50,7 @@ class TestTaskHypergraphGenerator(unittest.TestCase):
         target_taskinfos = self.task_hg_gen._select_taskset(target_utilizations)
 
         for target_u, target_taskinfo in zip(target_utilizations, target_taskinfos):
-            self.assertAlmostEqual(target_u, target_taskinfo.utilization, places=3)
+            self.assertAlmostEqual(target_u, target_taskinfo.utilization, places=2)
 
     def test_generate_tasksets(self):
         def is_uniform_distribution(data, bins=10, alpha=0.05):

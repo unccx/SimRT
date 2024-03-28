@@ -8,6 +8,7 @@ from simRT.utils.task_storage import TaskStorage
 
 class TestTaskStorage(unittest.TestCase):
     def setUp(self) -> None:
+        Path("./data/").mkdir(parents=True, exist_ok=True)
         self.task_db = TaskStorage(Path("./data/test.sqlite"))
 
     def tearDown(self) -> None:
@@ -43,8 +44,11 @@ class TestTaskStorage(unittest.TestCase):
         ]
         ns_result = [True, True, True, False]
         sufficient = [False, True, False, False]
+        S_m = 1 + 2
         for taskset, ns, s in zip(tasksets, ns_result, sufficient):
-            self.task_db.insert_taskset(taskset, ns, s)
+            taskset_u = sum(task.utilization for task in taskset)
+            sys_u = taskset_u / S_m
+            self.task_db.insert_taskset(taskset, ns, s, sys_u)
 
     def test_get_tasksets_dict(self):
         self.task_db.clear()
@@ -65,8 +69,11 @@ class TestTaskStorage(unittest.TestCase):
         ]
         ns_result = [True, True, True, False]
         sufficient = [False, True, False, False]
+        S_m = 1 + 2
         for taskset, ns, s in zip(tasksets, ns_result, sufficient):
-            self.task_db.insert_taskset(taskset, ns, s)
+            taskset_u = sum(task.utilization for task in taskset)
+            sys_u = taskset_u / S_m
+            self.task_db.insert_taskset(taskset, ns, s, sys_u)
         self.task_db.commit()
 
         tasksets_dict = self.task_db.get_tasksets_dict()
