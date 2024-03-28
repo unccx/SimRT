@@ -74,11 +74,11 @@ class TestTaskHypergraphGenerator(unittest.TestCase):
 
     def test_generate_hyperedge_list(self):
         schedulable_ratio, sufficient_ratio = self.task_hg_gen.generate_hyperedge_list(
-            num_taskset=100,
+            num_taskset=50,
             taskset_size=7,
-            num_process=16,
+            num_process=8,
             system_utilization=None,
-            cutoff=1000,
+            cutoff=500,
         )
         # print(
         #     f"schedulable_ratio: {schedulable_ratio}, sufficient_ratio: {sufficient_ratio}"

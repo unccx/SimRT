@@ -3,6 +3,7 @@ import functools
 import json
 import time
 from dataclasses import asdict, dataclass
+from math import ceil
 from multiprocessing import Pool
 from pathlib import Path
 from random import random, uniform
@@ -153,6 +154,38 @@ class TaskHypergraphGenerator:
             task_db.commit()
         return taskset, ns_result, sufficient
 
+    def parallel_simulate(
+        self,
+        num_process: int = 4,
+        tasksets: Optional[list[Taskset]] = None,
+        cutoff: Optional[SimTime] = None,
+    ):
+        if tasksets is None:
+            tasksets = self.tasksets
+        num_taskset = len(tasksets)
+        self.schedulable_num = 0
+        self.sufficient_num = 0
+        with Pool(processes=num_process) as pool:
+            results = pool.imap_unordered(
+                functools.partial(
+                    self.schedulability_test,
+                    platform_info=self.platform_info,
+                    db_path=self.data_path / "data.sqlite",
+                    cutoff=cutoff,
+                ),
+                tasksets,
+                # chunksize=ceil(taskset_size / (num_process)),
+            )
+            for _, is_schedulable, sufficient in tqdm(results, total=num_taskset):
+                if is_schedulable:
+                    self.schedulable_num += 1
+                if sufficient:
+                    self.sufficient_num += 1
+
+        self.task_db.commit()
+
+        return self.schedulable_num / num_taskset, self.sufficient_num / num_taskset
+
     def generate_hyperedge_list(
         self,
         num_taskset: int,
@@ -165,28 +198,8 @@ class TaskHypergraphGenerator:
             num_taskset, taskset_size, system_utilization
         )
 
-        self.schedulable_num = 0
-        self.sufficient_num = 0
-        with Pool(processes=num_process) as pool:
-            results = pool.imap_unordered(
-                functools.partial(
-                    self.schedulability_test,
-                    platform_info=self.platform_info,
-                    db_path=self.data_path / "data.sqlite",
-                    cutoff=cutoff,
-                ),
-                self.tasksets,
-            )
-            for taskset, is_schedulable, sufficient in tqdm(
-                results, total=len(self.tasksets)
-            ):
-                # self.task_db.insert_taskset(taskset, is_schedulable, sufficient)
-                if is_schedulable:
-                    self.schedulable_num += 1
-                if sufficient:
-                    self.sufficient_num += 1
+        schedulable_ratio, sufficient_ratio = self.parallel_simulate(
+            num_process, self.tasksets, cutoff
+        )
 
-        self.task_db.commit()
-        self.task_db.close()
-
-        return self.schedulable_num / num_taskset, self.sufficient_num / num_taskset
+        return schedulable_ratio, sufficient_ratio
