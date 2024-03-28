@@ -42,7 +42,8 @@ class TaskStorage:
             CREATE TABLE IF NOT EXISTS TaskSet (
                 TaskSetID INTEGER PRIMARY KEY AUTOINCREMENT,
                 IsSchedulable BOOLEAN,
-                SufficientResult BOOLEAN
+                SufficientResult BOOLEAN,
+                SystemUtilization REAL
             )
             """
         )
@@ -77,15 +78,21 @@ class TaskStorage:
         )
         return self.cursor.lastrowid
 
-    def insert_taskset(self, taskset: Taskset, is_schedulable: bool, sufficient: bool):
+    def insert_taskset(
+        self,
+        taskset: Taskset,
+        is_schedulable: bool,
+        sufficient: bool,
+        system_utilization: float,
+    ):
         """
         插入任务集
         在TaskSet中插入可调度性信息
         在TaskSetAssociation中插入关联关系
         """
         self.cursor.execute(
-            "INSERT INTO TaskSet (IsSchedulable, SufficientResult) VALUES (?, ?)",
-            (is_schedulable, sufficient),
+            "INSERT INTO TaskSet (IsSchedulable, SufficientResult, SystemUtilization) VALUES (?, ?, ?)",
+            (is_schedulable, sufficient, system_utilization),
         )
         if self.cursor.lastrowid is None:
             self.cursor.close()
