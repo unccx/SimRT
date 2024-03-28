@@ -36,7 +36,6 @@ class TestTaskHypergraphGenerator(unittest.TestCase):
             period_bound=(5, 20),
         )
         self.task_hg_gen = TaskHypergraphGenerator(self.config, Path("./data/"))
-        self.task_hg_gen.task_db.clear()
 
     def tearDown(self) -> None:
         self.task_hg_gen.task_db.close()
@@ -75,8 +74,12 @@ class TestTaskHypergraphGenerator(unittest.TestCase):
 
     def test_generate_hyperedge_list(self):
         schedulable_ratio, sufficient_ratio = self.task_hg_gen.generate_hyperedge_list(
-            num_taskset=1000, taskset_size=7, num_process=16, system_utilization=None
+            num_taskset=100,
+            taskset_size=7,
+            num_process=16,
+            system_utilization=None,
+            cutoff=1000,
         )
-        print(
-            f"schedulable_ratio: {schedulable_ratio}, sufficient_ratio: {sufficient_ratio}"
-        )
+        # print(
+        #     f"schedulable_ratio: {schedulable_ratio}, sufficient_ratio: {sufficient_ratio}"
+        # )

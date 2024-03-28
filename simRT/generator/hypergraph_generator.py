@@ -11,6 +11,7 @@ from typing import Optional
 from tqdm import tqdm
 
 from simRT import PeriodicTask, PlatformInfo, Simulator, TaskInfo
+from simRT.core.model import SimTime
 from simRT.generator.task_generator import TaskGenerator, Taskset
 from simRT.utils.schedulability import Schedulability
 from simRT.utils.task_storage import TaskStorage
@@ -52,6 +53,11 @@ class TaskHypergraphGenerator:
 
         self.hg_info.save_as_json(self.data_path / "config.json")
         self.task_db = TaskStorage(self.data_path / "data.sqlite")
+
+        self.task_db.clear()
+        for task in self.tasks:
+            self.task_db.insert_task(task)
+        self.task_db.commit()
 
     @property
     def platform_info(self):
@@ -128,13 +134,20 @@ class TaskHypergraphGenerator:
 
     @staticmethod
     def schedulability_test(
-        taskset: Taskset, platform_info: PlatformInfo
+        taskset: Taskset,
+        platform_info: PlatformInfo,
+        db_path: Optional[Path] = None,
+        cutoff: Optional[SimTime] = None,
     ) -> tuple[Taskset, bool, bool]:
         sim = Simulator(taskset, platform_info)
         # 可调度性充要条件
-        ns_result = sim.run()
+        ns_result = sim.run(until=cutoff)
         # 可调度性充分非必要条件
         sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
+        if db_path is not None:
+            task_db = TaskStorage(db_path)
+            task_db.insert_taskset(taskset, ns_result, sufficient)
+            task_db.commit()
         return taskset, ns_result, sufficient
 
     def generate_hyperedge_list(
@@ -143,6 +156,7 @@ class TaskHypergraphGenerator:
         taskset_size: int,
         num_process: int = 4,
         system_utilization: Optional[float] = None,
+        cutoff: Optional[SimTime] = None,
     ) -> tuple[float, float]:
         self.tasksets = self.generate_tasksets(
             num_taskset, taskset_size, system_utilization
@@ -153,14 +167,17 @@ class TaskHypergraphGenerator:
         with Pool(processes=num_process) as pool:
             results = pool.imap_unordered(
                 functools.partial(
-                    self.schedulability_test, platform_info=self.platform_info
+                    self.schedulability_test,
+                    platform_info=self.platform_info,
+                    db_path=self.data_path / "data.sqlite",
+                    cutoff=cutoff,
                 ),
                 self.tasksets,
             )
             for taskset, is_schedulable, sufficient in tqdm(
                 results, total=len(self.tasksets)
             ):
-                self.task_db.insert_taskset(taskset, is_schedulable, sufficient)
+                # self.task_db.insert_taskset(taskset, is_schedulable, sufficient)
                 if is_schedulable:
                     self.schedulable_num += 1
                 if sufficient:
