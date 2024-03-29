@@ -58,3 +58,22 @@ class TestSchedulability(unittest.TestCase):
         self.assertEqual(sim_fail + sim_success, num_task_set)
         # print(f"sim success rate: {sim_success/num_task_set}")
         # print(f"success rate: {success/num_task_set}")
+
+    def test_G_EDF_sufficient_test_case3(self):
+        triplets = [
+            (1, 37, 37),
+            (1, 43, 43),
+            (1, 5, 5),
+            (1, 25, 25),
+            (1, 47, 47),
+            (1, 26, 26),
+            (1, 45, 45),
+        ]
+        taskinfos = [
+            TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
+        ]
+
+        schedulability = Schedulability.G_EDF_sufficient_test(
+            Gamma=taskinfos, processors=PlatformInfo([1, 0.5])
+        )
+        self.assertTrue(schedulability)

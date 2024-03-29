@@ -38,6 +38,24 @@ class TestSimulator(unittest.TestCase):
         self.sim.run(until=self.sim.hyper_period + 10)
         self.assertEqual(self.sim.env.now, self.sim.hyper_period)
 
+    def test_run_case(self):
+        triplets = [
+            (1, 37, 37),
+            (1, 43, 43),
+            (1, 5, 5),
+            (1, 25, 25),
+            (1, 47, 47),
+            (1, 26, 26),
+            (1, 45, 45),
+        ]
+        taskinfos = [
+            TaskInfo(i, PeriodicTask, *triplet) for i, triplet in enumerate(triplets)
+        ]
+        self.sim = Simulator(taskinfos)
+
+        ret = self.sim.run(until=1000000, show_progress=True)
+        print(ret)
+
     def test_run_meet_deadline(self):
         triplets = [(25, 50, 50), (30, 75, 75)]
         taskinfos = [
