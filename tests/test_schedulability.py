@@ -26,7 +26,7 @@ class TestSchedulability(unittest.TestCase):
         schedulability = Schedulability.G_EDF_sufficient_test(
             Gamma=taskinfos, processors=PlatformInfo([1, 0.5])
         )
-        print(schedulability)
+        self.assertFalse(schedulability)
 
     def test_G_EDF_sufficient_test_case2(self):
         num_task_set = 10

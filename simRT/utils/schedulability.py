@@ -20,12 +20,12 @@ class Schedulability:
     @staticmethod
     def LOAD(Gamma: Sequence[TaskInfo]):
         hyper_period = math.lcm(*[math.ceil(tau.period) for tau in Gamma])
-        load = []
+        load = 0
         for delta_t in range(1, hyper_period + 1):
-            load.append(
-                sum(Schedulability.DBF(tau, delta_t) for tau in Gamma) / delta_t
+            load = max(
+                load, sum(Schedulability.DBF(tau, delta_t) for tau in Gamma) / delta_t
             )
-        return max(load)
+        return load
 
     @staticmethod
     def G_EDF_sufficient_test(Gamma: Sequence[TaskInfo], processors: PlatformInfo):
