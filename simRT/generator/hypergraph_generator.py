@@ -9,7 +9,7 @@ from pathlib import Path
 from random import random, uniform
 from typing import Optional
 
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 from simRT import PeriodicTask, PlatformInfo, Simulator, TaskInfo
 from simRT.core.model import SimTime
@@ -121,7 +121,7 @@ class TaskHypergraphGenerator:
         如果 system_utilization is None，则随机生成系统利用率
         """
         tasksets: list[Taskset] = []
-        while len(tasksets) < num_taskset:
+        for _ in trange(num_taskset, desc="generating_taskset", leave=False):
             if system_utilization is None:
                 taskset_utilization = random() * self.platform_info.S_m
             else:
@@ -140,7 +140,9 @@ class TaskHypergraphGenerator:
         platform_info: PlatformInfo,
         db_path: Optional[Path] = None,
         cutoff: Optional[SimTime] = None,
-    ) -> tuple[Taskset, bool, bool]:
+        return_data: bool = False,
+    ) -> Optional[tuple[Taskset, bool, bool]]:
+
         # 可调度性充分非必要条件
         sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
 
@@ -158,13 +160,16 @@ class TaskHypergraphGenerator:
             sys_u = taskset_u / platform_info.S_m
             task_db.insert_taskset(taskset, ns_result, sufficient, sys_u)
             task_db.commit()
-        return taskset, ns_result, sufficient
+
+        if return_data:
+            return taskset, ns_result, sufficient
 
     def parallel_simulate(
         self,
         num_process: int = 4,
         tasksets: Optional[list[Taskset]] = None,
         cutoff: Optional[SimTime] = None,
+        return_ratio: bool = False,
     ):
         if tasksets is None:
             tasksets = self.tasksets
@@ -180,17 +185,25 @@ class TaskHypergraphGenerator:
                     cutoff=cutoff,
                 ),
                 tasksets,
-                # chunksize=ceil(taskset_size / (num_process)),
+                # chunksize=ceil(num_taskset / (num_process)),
             )
-            for _, is_schedulable, sufficient in tqdm(results, total=num_taskset):
-                if is_schedulable:
-                    self.schedulable_num += 1
-                if sufficient:
-                    self.sufficient_num += 1
+            for result in tqdm(results, total=num_taskset):
+                if result is not None:
+                    taskset, is_schedulable, sufficient = result
+                    taskset_u = sum(task.utilization for task in taskset)
+                    sys_u = taskset_u / self.platform_info.S_m
+                    self.task_db.insert_taskset(
+                        taskset, is_schedulable, sufficient, sys_u
+                    )
+                    if is_schedulable:
+                        self.schedulable_num += 1
+                    if sufficient:
+                        self.sufficient_num += 1
 
         self.task_db.commit()
 
-        return self.schedulable_num / num_taskset, self.sufficient_num / num_taskset
+        if return_ratio:
+            return self.schedulable_num / num_taskset, self.sufficient_num / num_taskset
 
     def generate_hyperedge_list(
         self,
@@ -199,13 +212,9 @@ class TaskHypergraphGenerator:
         num_process: int = 4,
         system_utilization: Optional[float] = None,
         cutoff: Optional[SimTime] = None,
-    ) -> tuple[float, float]:
+    ):
         self.tasksets = self.generate_tasksets(
             num_taskset, taskset_size, system_utilization
         )
 
-        schedulable_ratio, sufficient_ratio = self.parallel_simulate(
-            num_process, self.tasksets, cutoff
-        )
-
-        return schedulable_ratio, sufficient_ratio
+        self.parallel_simulate(num_process, self.tasksets, cutoff)

@@ -73,9 +73,9 @@ class TestTaskHypergraphGenerator(unittest.TestCase):
         self.assertTrue(is_uniform_distribution(utilization_distribution, bins=100))
 
     def test_generate_hyperedge_list(self):
-        schedulable_ratio, sufficient_ratio = self.task_hg_gen.generate_hyperedge_list(
+        self.task_hg_gen.generate_hyperedge_list(
             num_taskset=50,
-            taskset_size=7,
+            taskset_size=5,
             num_process=8,
             system_utilization=None,
             cutoff=500,
