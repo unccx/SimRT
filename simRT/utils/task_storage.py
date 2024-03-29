@@ -43,7 +43,8 @@ class TaskStorage:
                 TaskSetID INTEGER PRIMARY KEY AUTOINCREMENT,
                 IsSchedulable BOOLEAN,
                 SufficientResult BOOLEAN,
-                SystemUtilization REAL
+                SystemUtilization REAL,
+                TasksetSize INTEGER
             )
             """
         )
@@ -91,8 +92,8 @@ class TaskStorage:
         在TaskSetAssociation中插入关联关系
         """
         self.cursor.execute(
-            "INSERT INTO TaskSet (IsSchedulable, SufficientResult, SystemUtilization) VALUES (?, ?, ?)",
-            (is_schedulable, sufficient, system_utilization),
+            "INSERT INTO TaskSet (IsSchedulable, SufficientResult, SystemUtilization, TasksetSize) VALUES (?, ?, ?, ?)",
+            (is_schedulable, sufficient, system_utilization, len(taskset)),
         )
         if self.cursor.lastrowid is None:
             self.cursor.close()
