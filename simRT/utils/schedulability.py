@@ -1,6 +1,6 @@
 import math
 import time
-from math import floor
+from math import ceil, floor
 from typing import Optional, Sequence
 
 from simpy.core import SimTime
@@ -21,7 +21,8 @@ class Schedulability:
     def LOAD(Gamma: Sequence[TaskInfo]):
         hyper_period = math.lcm(*[math.ceil(tau.period) for tau in Gamma])
         load = 0
-        for delta_t in range(1, hyper_period + 1):
+        step = ceil(hyper_period / 10000)
+        for delta_t in range(1, hyper_period + 1, step):
             load = max(
                 load, sum(Schedulability.DBF(tau, delta_t) for tau in Gamma) / delta_t
             )

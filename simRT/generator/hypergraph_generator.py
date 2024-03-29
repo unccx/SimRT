@@ -1,6 +1,7 @@
 import bisect
 import functools
 import json
+import os
 import time
 from dataclasses import asdict, dataclass
 from math import ceil
@@ -9,6 +10,7 @@ from pathlib import Path
 from random import random, uniform
 from typing import Optional
 
+import psutil
 from tqdm import tqdm, trange
 
 from simRT import PeriodicTask, PlatformInfo, Simulator, TaskInfo
@@ -143,16 +145,16 @@ class TaskHypergraphGenerator:
         return_data: bool = False,
     ) -> Optional[tuple[Taskset, bool, bool]]:
 
-        # 可调度性充分非必要条件
-        sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
+        # 可调度性充要条件
+        sim = Simulator(taskset, platform_info)
+        ns_result = sim.run(until=cutoff)
 
-        # 如果充分测试为可调度，则必定满足充要条件
-        if sufficient is False:
-            # 可调度性充要条件
-            sim = Simulator(taskset, platform_info)
-            ns_result = sim.run(until=cutoff)
+        # 如果模拟测试为不可调度，则认为不满足充分条件
+        if ns_result is False:
+            # 可调度性充分非必要条件
+            sufficient = False
         else:
-            ns_result = True
+            sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
 
         if db_path is not None:
             task_db = TaskStorage(db_path)
@@ -164,6 +166,15 @@ class TaskHypergraphGenerator:
         if return_data:
             return taskset, ns_result, sufficient
 
+    @staticmethod
+    def init_process():
+        # 获取当前进程的PID
+        pid = os.getpid()
+        # 获取当前进程对象
+        current_process = psutil.Process(pid)
+        # 将当前进程的优先级设置为高
+        current_process.nice(psutil.HIGH_PRIORITY_CLASS)
+
     def parallel_simulate(
         self,
         num_process: int = 4,
@@ -174,9 +185,11 @@ class TaskHypergraphGenerator:
         if tasksets is None:
             tasksets = self.tasksets
         num_taskset = len(tasksets)
+
         self.schedulable_num = 0
         self.sufficient_num = 0
-        with Pool(processes=num_process) as pool:
+
+        with Pool(processes=num_process, initializer=self.init_process) as pool:
             results = pool.imap_unordered(
                 functools.partial(
                     self.schedulability_test,
