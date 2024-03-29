@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class TaskStorage:
 
     def __init__(self, db_name: Path):
-        self.conn = sqlite3.connect(db_name)
+        self.conn = sqlite3.connect(db_name, timeout=60.0)
         self.cursor = self.conn.cursor()
         self.create_tables()
 
