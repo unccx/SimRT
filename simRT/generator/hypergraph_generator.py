@@ -48,10 +48,13 @@ class TaskHypergraphGenerator:
             PeriodicTask, self.period_bound, self.platform_info
         )
         self.tasks: list[TaskInfo] = self._generate_tasks()
-        self.data_id = int(time.time())
+
+        current_time = time.localtime()
+        formatted_time = time.strftime("%Y-%m-%d_%H-%M-%S", current_time)
+        self.data_id: str = formatted_time
 
         self.data_path: Path = (
-            Path(f"./data/{self.data_id}") if data_path is None else data_path
+            Path(f"./data/") / self.data_id if data_path is None else data_path
         )
         self.data_path.mkdir(parents=True, exist_ok=True)
 
