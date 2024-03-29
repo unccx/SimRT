@@ -5,5 +5,5 @@ Simulate the scheduling process of real-time scheduling algorithm on heterogeneo
 # Installation
 ## pip
 ```bash
-pip install https://github.com/unccx/simRT.git
+pip install git+https://github.com/unccx/simRT.git
 ```
