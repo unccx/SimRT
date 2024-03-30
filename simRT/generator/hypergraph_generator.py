@@ -149,16 +149,16 @@ class TaskHypergraphGenerator:
         return_data: bool = False,
     ) -> Optional[tuple[Taskset, bool, bool]]:
 
-        # 可调度性充要条件
-        sim = Simulator(taskset, platform_info)
-        ns_result = sim.run(until=cutoff)
+        # 可调度性充分非必要条件
+        sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
 
-        # 如果模拟测试为不可调度，则认为不满足充分条件
-        if ns_result is False:
-            # 可调度性充分非必要条件
-            sufficient = False
+        # 如果充分测试为可调度，则必定满足充要条件
+        if sufficient is False:
+            # 可调度性充要条件
+            sim = Simulator(taskset, platform_info)
+            ns_result = sim.run(until=cutoff)
         else:
-            sufficient = Schedulability.G_EDF_sufficient_test(taskset, platform_info)
+            ns_result = True
 
         if db_path is not None:
             task_db = TaskStorage(db_path)
