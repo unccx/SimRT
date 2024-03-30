@@ -15,7 +15,10 @@ class Schedulability:
         """
         Demand Bound Function
         """
-        return max(0, (floor((delta_t - tau.deadline) / tau.period) + 1) * tau.wcet)
+        if delta_t >= tau.deadline:
+            return max(0, (floor((delta_t - tau.deadline) / tau.period) + 1) * tau.wcet)
+        else:
+            return tau.wcet
 
     @staticmethod
     def LOAD(Gamma: Sequence[TaskInfo]):
