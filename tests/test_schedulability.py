@@ -12,7 +12,7 @@ class TestSchedulability(unittest.TestCase):
     def setUp(self) -> None:
         self.task_gen = TaskGenerator(
             task_type=PeriodicTask,
-            period_bound=(5, 20),
+            period_bound=(1, 10),
             platform_info=[1, 0.5],
             implicit_deadline=True,
         )
@@ -29,9 +29,9 @@ class TestSchedulability(unittest.TestCase):
         self.assertFalse(schedulability)
 
     def test_G_EDF_sufficient_test_case2(self):
-        num_task_set = 10
+        num_task_set = 1000
         tasksets = self.task_gen.generate_taskset(
-            system_utilization=0.8, num_task=self.num_task, num_task_set=num_task_set
+            system_utilization=0.99, num_task=self.num_task, num_task_set=num_task_set
         )
         success = 0
         sim_success = 0
