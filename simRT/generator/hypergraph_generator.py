@@ -83,6 +83,7 @@ class TaskHypergraphGenerator:
         for _ in range(self.num_node):
             task_utilizations.append(uniform(0, self.platform_info.fastest_speed))
 
+        task_utilizations.sort()
         return self.task_gen.generate_task(task_utilizations)
 
     def _select_taskset(self, target_utilizations: list[float]) -> Taskset:
