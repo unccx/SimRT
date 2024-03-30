@@ -219,6 +219,38 @@ class TaskStorage:
 
         return task_infos
 
+    def count_tasksets_in_utilization_range(
+        self,
+        lower_bound: float,
+        upper_bound: float,
+        is_schedulable: Optional[bool] = None,
+        sufficient: Optional[bool] = None,
+    ) -> int:
+        # 构建 SQL 查询语句
+        sql = """
+            SELECT COUNT(*) AS num_tasksets
+            FROM TaskSet
+            WHERE SystemUtilization BETWEEN ? AND ?
+        """
+        params = [lower_bound, upper_bound]
+
+        # 添加额外的条件
+        if is_schedulable is not None:
+            sql += " AND IsSchedulable = ?"
+            params.append(int(is_schedulable))
+        if sufficient is not None:
+            sql += " AND SufficientResult = ?"
+            params.append(int(sufficient))
+
+        # 执行查询
+        self.cursor.execute(sql, tuple(params))
+        result = self.cursor.fetchone()
+
+        # 获取查询结果
+        num_tasksets = result[0] if result else 0
+
+        return num_tasksets
+
     def clear_table(self, table_name: str):
         self.cursor.execute(f"DELETE FROM {table_name}")
         self.commit()
