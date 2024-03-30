@@ -92,7 +92,7 @@ class TaskStorage:
         在TaskSetAssociation中插入关联关系
         """
         self.cursor.execute(
-            "INSERT INTO TaskSet (IsSchedulable, SufficientResult, SystemUtilization, TasksetSize) VALUES (?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO TaskSet (IsSchedulable, SufficientResult, SystemUtilization, TasksetSize) VALUES (?, ?, ?, ?)",
             (is_schedulable, sufficient, system_utilization, len(taskset)),
         )
         if self.cursor.lastrowid is None:
@@ -142,6 +142,30 @@ class TaskStorage:
             tasksets_dict[tuple(taskinfos)] = (bool(is_schedulable), bool(sufficient))
 
         return tasksets_dict
+
+    def get_all_taskinfos(self) -> list[TaskInfo]:
+        task_infos: list[TaskInfo] = []
+
+        self.cursor.execute(
+            """
+            SELECT Task.TaskID, Task.TaskType, Task.WCET, Task.Deadline, Task.Period
+            FROM Task 
+            """,
+        )
+        task_rows = self.cursor.fetchall()
+
+        for task_row in task_rows:
+            task_id, task_type_str, wcet, deadline, period = task_row
+            task_type = TYPE_MAPPING.get(task_type_str)
+            if task_type is None:
+                raise ValueError(f"Unknown task type: {task_type_str}")
+
+            task_info = TaskInfo(
+                id=task_id, type=task_type, wcet=wcet, deadline=deadline, period=period
+            )
+            task_infos.append(task_info)
+
+        return task_infos
 
     def get_taskinfos_for_tasksetid(self, taskset_id: int) -> list[TaskInfo]:
         task_infos: list[TaskInfo] = []
