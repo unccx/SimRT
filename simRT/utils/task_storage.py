@@ -4,6 +4,8 @@ import sqlite3
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
+from tqdm import tqdm
+
 from simRT.core.task import TYPE_MAPPING, TaskInfo
 
 if TYPE_CHECKING:
@@ -114,7 +116,10 @@ class TaskStorage:
         )
 
     def get_tasksets_dict(
-        self, is_schedulable: Optional[bool] = None, sufficient: Optional[bool] = None
+        self,
+        is_schedulable: Optional[bool] = None,
+        sufficient: Optional[bool] = None,
+        show_progress: bool = False,
     ) -> dict[tuple[TaskInfo, ...], tuple[bool, bool]]:
         tasksets_dict: dict[tuple[TaskInfo, ...], tuple[bool, bool]] = {}
 
@@ -136,10 +141,22 @@ class TaskStorage:
         self.cursor.execute(sql, tuple(params))
         tasksets_rows = self.cursor.fetchall()
 
-        for taskset_row in tasksets_rows:
-            taskset_id, is_schedulable, sufficient = taskset_row
-            taskinfos = self.get_taskinfos_for_tasksetid(taskset_id)
-            tasksets_dict[tuple(taskinfos)] = (bool(is_schedulable), bool(sufficient))
+        if show_progress is True:
+            for taskset_row in tqdm(tasksets_rows):
+                taskset_id, is_schedulable, sufficient = taskset_row
+                taskinfos = self.get_taskinfos_for_tasksetid(taskset_id)
+                tasksets_dict[tuple(taskinfos)] = (
+                    bool(is_schedulable),
+                    bool(sufficient),
+                )
+        else:
+            for taskset_row in tasksets_rows:
+                taskset_id, is_schedulable, sufficient = taskset_row
+                taskinfos = self.get_taskinfos_for_tasksetid(taskset_id)
+                tasksets_dict[tuple(taskinfos)] = (
+                    bool(is_schedulable),
+                    bool(sufficient),
+                )
 
         return tasksets_dict
 
