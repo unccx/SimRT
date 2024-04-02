@@ -260,7 +260,10 @@ class ProcessorPlatform(Resource):
         return super()._do_put(event)
 
     def _do_get(self, event: ProcessorRelease) -> None:
+        # 判断当前请求是被挤出users还是正常完成执行需求离开处理器
         if event.request.is_on_platform:
+            # 如果是正常完成执行需求离开处理器，需要中断users中速度较低的核心上的请求
+            # 因为 event.request 之后的这些请求需要递补到速度更快的核心上，需要重新确定执行速度
             idx = self.users.index(event.request)
             interrupted: ProcessorRequest  # type hint
             for interrupted in self.users[idx + 1 :]:

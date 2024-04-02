@@ -18,7 +18,7 @@ class Simulator:
     ) -> None:
         """
         taskinfos 任务集合
-        processors 处理器集合，如果为 None 则默认为单处理器
+        platform_info 处理器集合，如果为 None 则默认为单处理器
         """
         self.env = simpy.Environment()
         self.platform = ProcessorPlatform(self.env, platform_info)
