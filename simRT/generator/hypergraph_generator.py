@@ -11,7 +11,7 @@ from random import random, uniform
 from typing import Optional
 
 import psutil
-from tqdm import tqdm, trange
+from tqdm import tqdm
 
 from simRT import PeriodicTask, PlatformInfo, Simulator, TaskInfo
 from simRT.core.model import SimTime
@@ -79,35 +79,29 @@ class TaskHypergraphGenerator:
         return self.hg_info.period_bound
 
     def _generate_tasks(self) -> list[TaskInfo]:
-        task_utilizations = []
+        self.task_utilizations = []
         for _ in range(self.num_node):
-            task_utilizations.append(uniform(0, self.platform_info.fastest_speed))
+            self.task_utilizations.append(uniform(0, self.platform_info.fastest_speed))
 
-        task_utilizations.sort()
-        return self.task_gen.generate_task(task_utilizations)
+        self.task_utilizations.sort()
+        return self.task_gen.generate_task(self.task_utilizations)
 
     def _select_taskset(self, target_utilizations: list[float]) -> Taskset:
         """
         从candidate_taskinfos中选择与target_utilizations中利用率相近的任务作为任务集
         任务节点数量太少会导致被选择任务的利用率与期望的利用率相差过大
         """
-        candidate_taskinfos = self.tasks
-        candidate_taskinfos.sort(key=lambda x: x.utilization)
-        candidate_utilizations = [
-            taskinfo.utilization for taskinfo in candidate_taskinfos
-        ]
-
         target_taskinfos = []
         for target_u in target_utilizations:
-            index = bisect.bisect_left(candidate_utilizations, target_u)
+            index = bisect.bisect_left(self.task_utilizations, target_u)
 
             if index == 0:
-                target_taskinfo = candidate_taskinfos[0]
-            if index == len(candidate_taskinfos):
-                target_taskinfo = candidate_taskinfos[-1]
+                target_taskinfo = self.tasks[0]
+            if index == len(self.tasks):
+                target_taskinfo = self.tasks[-1]
             else:
-                before = candidate_taskinfos[index - 1]
-                after = candidate_taskinfos[index]
+                before = self.tasks[index - 1]
+                after = self.tasks[index]
                 target_taskinfo = min(
                     [after, before], key=lambda x: abs(x.utilization - target_u)
                 )
@@ -127,7 +121,7 @@ class TaskHypergraphGenerator:
         如果 system_utilization is None，则随机生成系统利用率
         """
         tasksets: list[Taskset] = []
-        for _ in trange(num_taskset, desc="generating_taskset", leave=False):
+        for _ in range(num_taskset):
             if system_utilization is None:
                 taskset_utilization = random() * self.platform_info.S_m
             else:
