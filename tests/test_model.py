@@ -53,7 +53,7 @@ class TestSimulator(unittest.TestCase):
         ]
         self.sim = Simulator(taskinfos)
 
-        ret = self.sim.run(until=1000000, show_progress=True)
+        ret = self.sim.run(until=123456, show_progress=True)
         print(ret)
 
     def test_run_meet_deadline(self):

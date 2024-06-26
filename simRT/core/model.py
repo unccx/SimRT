@@ -47,13 +47,17 @@ class Simulator:
         try:
             if until is None or until > self.hyper_period:
                 until = self.hyper_period
-            if show_progress:
-                for i in trange(
-                    1, math.ceil(until) + 1, 100, desc="Processing", leave=False
-                ):
-                    self.env.run(until=i)
-            else:
-                self.env.run(until=until)
+
+            for i in trange(
+                1,
+                math.ceil(until),
+                100,
+                desc="Processing",
+                leave=False,
+                disable=not show_progress,
+            ):
+                self.env.run(until=i)
+
         except simpy.Interrupt as ir:
             # 在模拟调度期间错过任务的 deadline
             return False
