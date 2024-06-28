@@ -3,7 +3,7 @@ from typing import Optional, Sequence
 
 import simpy
 from simpy.core import SimTime
-from tqdm import trange
+from tqdm import tqdm
 
 from .processor import PlatformInfo, ProcessorPlatform, SpeedType
 from .task import GenericTask, TaskInfo
@@ -48,15 +48,17 @@ class Simulator:
             if until is None or until > self.hyper_period:
                 until = self.hyper_period
 
-            for i in trange(
-                1,
-                math.ceil(until),
-                100,
-                desc="Processing",
+            # 设置进度条
+            progress_bar = tqdm(
+                total=until,
+                desc="Simulation Progress",
                 leave=False,
                 disable=not show_progress,
-            ):
+            )
+            for i in range(math.floor(self.env.now) + 1, math.ceil(until) + 1):
                 self.env.run(until=i)
+                progress_bar.update(1)
+            progress_bar.close()
 
         except simpy.Interrupt as ir:
             # 在模拟调度期间错过任务的 deadline
