@@ -78,11 +78,11 @@ class TestTaskStorage(unittest.TestCase):
 
         tasksets_dict = self.task_db.get_tasksets_dict()
 
-        for i, j in zip(tasksets_dict.keys(), tasksets):
-            self.assertEqual(list(i), j)
+        for i, j in zip(tasksets_dict.values(), tasksets):
+            self.assertEqual(list(i[0]), j)
 
         for i, ns, s in zip(tasksets_dict.values(), ns_result, sufficient):
-            self.assertEqual(i, (ns, s))
+            self.assertEqual(i[1:], (ns, s))
 
     def test_count_tasksets_in_utilization_range(self):
         self.task_db = TaskStorage(Path("./data/2024-03-30_11-48-46/data.sqlite"))

@@ -120,8 +120,7 @@ class TaskStorage:
         is_schedulable: Optional[bool] = None,
         sufficient: Optional[bool] = None,
         show_progress: bool = False,
-    ) -> dict[tuple[TaskInfo, ...], tuple[bool, bool]]:
-        tasksets_dict: dict[tuple[TaskInfo, ...], tuple[bool, bool]] = {}
+    ) -> dict[int, tuple[tuple[TaskInfo, ...], bool, bool]]:
 
         # 构建查询语句
         sql = (
@@ -141,10 +140,12 @@ class TaskStorage:
         self.cursor.execute(sql, tuple(params))
         tasksets_rows = self.cursor.fetchall()
 
+        tasksets_dict: dict[int, tuple[tuple[TaskInfo, ...], bool, bool]] = {}
         for taskset_row in tqdm(tasksets_rows, disable=not show_progress):
             taskset_id, is_schedulable, sufficient = taskset_row
             taskinfos = self.get_taskinfos_for_tasksetid(taskset_id)
-            tasksets_dict[tuple(taskinfos)] = (
+            tasksets_dict[taskset_id] = (
+                tuple(taskinfos),
                 bool(is_schedulable),
                 bool(sufficient),
             )
