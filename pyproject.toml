@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "simRT"
-version = "1.3.0"
+dynamic = ["version"]
 description = "Simulate the scheduling process of real-time scheduling algorithm on heterogeneous multi-core processor platform"
 readme = "README.md"
 dependencies = [
