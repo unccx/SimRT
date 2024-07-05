@@ -54,8 +54,9 @@ class TaskHypergraphGenerator:
         self.data_id: str = formatted_time
 
         self.data_path: Path = (
-            Path(f"./data/") / self.data_id if data_path is None else data_path
+            (Path(f"./data/") / self.data_id) if data_path is None else data_path
         )
+
         self.data_path.mkdir(parents=True, exist_ok=True)
 
         self.hg_info.save_as_json(self.data_path / "config.json")
