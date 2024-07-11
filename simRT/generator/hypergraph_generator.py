@@ -15,6 +15,7 @@ from tqdm import tqdm
 
 from simRT import PeriodicTask, PlatformInfo, Simulator, TaskInfo
 from simRT.core.model import SimTime
+from simRT.core.task import TYPE_MAPPING, GenericTask
 from simRT.generator.task_generator import TaskGenerator, Taskset
 from simRT.utils.schedulability import Schedulability
 from simRT.utils.task_storage import TaskStorage
@@ -23,20 +24,26 @@ from simRT.utils.task_storage import TaskStorage
 @dataclass(frozen=True, eq=True)
 class HGConfig:
     platform_info: PlatformInfo
-    num_node: int  # 任务节点数量太少会导致被选择任务的利用率与期望的利用率相差过大
-    period_bound: tuple[int, int]
+    num_task_node: int  # 任务节点数量太少会导致被选择任务的利用率与期望的利用率相差过大
+    period_bound: tuple[int, int]  # 任务周期的最小值和最大值
+    task_type: type[GenericTask] = PeriodicTask
+    num_hg: int = 1  # 超图数量
 
     def save_as_json(self, file_path: Path):
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with file_path.open(mode="w") as json_file:
-            json.dump(asdict(self), json_file, indent=4)
+            json_dict = asdict(self)
+            # 类型变量不支持 json 序列化，需要特别处理
+            json_dict["task_type"] = str(self.task_type)
+            json.dump(json_dict, json_file, indent=4)
 
     @classmethod
-    def from_json(cls, file_path: Path):
+    def load_from_json(cls, file_path: Path):
         with file_path.open(mode="r") as json_file:
             data = json.load(json_file)
             data["platform_info"] = PlatformInfo(data["platform_info"]["speed_list"])
             data["period_bound"] = tuple(data["period_bound"])
+            data["task_type"] = TYPE_MAPPING.get(data["task_type"])
             return cls(**data)
 
 
@@ -45,7 +52,7 @@ class TaskHypergraphGenerator:
     def __init__(self, hg_info: HGConfig, data_path: Optional[Path] = None):
         self.hg_info = hg_info
         self.task_gen = TaskGenerator(
-            PeriodicTask, self.period_bound, self.platform_info
+            self.hg_info.task_type, self.period_bound, self.platform_info
         )
         self.tasks: list[TaskInfo] = self._generate_tasks()
 
@@ -73,7 +80,7 @@ class TaskHypergraphGenerator:
 
     @property
     def num_node(self):
-        return self.hg_info.num_node
+        return self.hg_info.num_task_node
 
     @property
     def period_bound(self):
