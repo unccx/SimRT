@@ -9,6 +9,7 @@ from ..core.task import GenericTask, TaskInfo
 
 Taskset = list[TaskInfo]
 
+
 class TaskGenerator:
     _task_id_iter = count()
 
@@ -39,6 +40,11 @@ class TaskGenerator:
         num_task_set: int,
         algorithm: Optional[Callable] = None,
     ) -> list[Taskset]:
+        """
+        根据指定的系统利用率 system_utilization
+        使用指定的利用率生成算法 algorithm （默认使用 UUniFast 算法）
+        生成 num_task_set 个任务集，每个任务集由 num_task 个任务组成。
+        """
         assert (
             system_utilization > 0 and system_utilization <= 1
         ), "System utilization must be in (0,1]"
