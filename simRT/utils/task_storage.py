@@ -1,15 +1,17 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 from tqdm import tqdm
 
+from simRT.core.processor import SpeedType
 from simRT.core.task import TYPE_MAPPING, TaskInfo
 
 if TYPE_CHECKING:
-    from simRT.generator.task_generator import Taskset
+    from simRT.generator.taskset_generator import Taskset
 
 
 class TaskStorage:
@@ -62,6 +64,16 @@ class TaskStorage:
             )
             """
         )
+
+        # 创建 metadata 表
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS MetaData (
+                ID INTEGER PRIMARY KEY,
+                DATA TEXT
+            )
+            """
+        )
         self.commit()
 
     def insert_task(self, task: TaskInfo):
@@ -69,7 +81,7 @@ class TaskStorage:
         插入任务
         """
         self.cursor.execute(
-            "INSERT INTO Task (TaskID, TaskType, WCET, Deadline, Period, Utilization) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO Task (TaskID, TaskType, WCET, Deadline, Period, Utilization) VALUES (?, ?, ?, ?, ?, ?)",
             (
                 task.id,
                 str(task.type),
@@ -84,8 +96,8 @@ class TaskStorage:
     def insert_taskset(
         self,
         taskset: Taskset,
-        is_schedulable: bool,
-        sufficient: bool,
+        is_schedulable: Optional[bool],
+        sufficient: Optional[bool],
         system_utilization: float,
     ):
         """
@@ -109,11 +121,32 @@ class TaskStorage:
     def insert_task_set_association(self, task: TaskInfo, taskset_id: int):
         self.cursor.execute(
             """
-            INSERT OR IGNORE INTO TaskSetAssociation (TaskSetID, TaskID)
-            VALUES (?, ?)
+            INSERT OR IGNORE INTO TaskSetAssociation (TaskSetID, TaskID) VALUES (?, ?)
             """,
             (taskset_id, task.id),
         )
+
+    def insert_metadata(
+        self, speed_list: list[SpeedType], period_bound: tuple[int, int], num_task: int
+    ):
+        json_data = {
+            "speed_list": speed_list,
+            "period_bound": period_bound,
+            "num_task": num_task,
+        }
+        self.cursor.execute(
+            """
+            INSERT INTO metadata (data) VALUES (?)
+            """,
+            (json.dumps(json_data),),
+        )
+
+    def get_metadata(self) -> dict:
+        self.cursor.execute("""SELECT data FROM metadata WHERE id = 1""")
+        row = self.cursor.fetchone()
+        metadata = json.loads(row[0])
+        metadata["period_bound"] = tuple(metadata["period_bound"])
+        return metadata
 
     def get_tasksets_dict(
         self,

@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from simRT.core.task import PeriodicTask, TaskInfo
-from simRT.generator.task_generator import Taskset
+from simRT.generator.task_factory import Taskset
 from simRT.utils.task_storage import TaskStorage
 
 
@@ -49,6 +49,15 @@ class TestTaskStorage(unittest.TestCase):
             taskset_u = sum(task.utilization for task in taskset)
             sys_u = taskset_u / S_m
             self.task_db.insert_taskset(taskset, ns, s, sys_u)
+
+    def test_metadata(self):
+        self.task_db.insert_metadata(
+            speed_list=[1, 2, 3], period_bound=(1, 50), num_task=5000
+        )
+        metadata = self.task_db.get_metadata()
+        self.assertEqual(metadata["speed_list"], [1, 2, 3])
+        self.assertEqual(metadata["period_bound"], (1, 50))
+        self.assertEqual(metadata["num_task"], 5000)
 
     def test_get_tasksets_dict(self):
         self.task_db.clear()
