@@ -8,14 +8,8 @@
   - [目录](#目录)
   - [简介](#简介)
   - [安装](#安装)
-    - [通过 pip 安装](#通过-pip-安装)
-    - [从源代码安装](#从源代码安装)
   - [使用方法](#使用方法)
   - [贡献指南](#贡献指南)
-    - [报告问题](#报告问题)
-    - [提出特性请求](#提出特性请求)
-    - [贡献代码](#贡献代码)
-    - [代码风格和规范](#代码风格和规范)
 
 ## 简介
 
@@ -33,22 +27,32 @@ SimRT 是一个用于模拟实时调度算法的调度过程的 Python 库。
 pip install git+https://github.com/unccx/SimRT.git
 ```
 
+### 通过 poetry 安装
+```shell
+poetry add git+https://github.com/unccx/SimRT.git
+```
+
 ### 从源代码安装
 
 1. 克隆这个仓库：
-   ```shell
-   git clone https://github.com/unccx/SimRT.git
-   ```
+    ```shell
+    git clone https://github.com/unccx/SimRT.git
+    ```
 2. 进入项目目录：
-   ```shell
-   cd SimRT
-   ```
+    ```shell
+    cd SimRT
+    ```
 3. 安装依赖：
-   - 使用 conda/mamba 安装依赖
-   ```shell
-   conda env create -f .\environment.yml
-   conda activate simrt
-   ```
+   - 使用 conda/mamba 安装依赖环境
+    ```shell
+    conda env create -f .\environment.yml
+    conda activate simrt
+    ```
+   - 使用 poetry 安装依赖环境
+    ```shell
+    poetey install
+    poetry shell
+    ```
 
 ## 使用方法
 模拟周期性实时任务的调度过程，判断模拟过程中是否出现错过任务期限
@@ -83,7 +87,7 @@ print(ret)
 - 如果你发现了 bug 或有改进建议，请首先检查 [issue 列表](https://github.com/unccx/SimRT/issues) 以确定是否已有相关的报告。
 - 如果没有，请在 [issue 页面](https://github.com/unccx/SimRT/issues/new) 创建一个新的 issue，描述问题的详细信息和复现步骤。
 
-### 提出特性请求
+### 提出功能请求
 - 如果你有新功能的想法或建议，请在 [issue 页面](https://github.com/unccx/SimRT/issues/new) 提出一个新的 issue，并详细描述你希望添加的功能和它的用途。
 
 ### 贡献代码
