@@ -81,8 +81,17 @@ class ParallelStrategy(ExecutionStrategy):
         pid = os.getpid()
         # 获取当前进程对象
         current_process = psutil.Process(pid)
-        # 将当前进程的优先级设置为高
-        current_process.nice(psutil.HIGH_PRIORITY_CLASS)
+        if os.name == "posix":  # linux
+            try:
+                current_process.nice(-10)  # 高优先级
+            except psutil.AccessDenied:
+                print(
+                    "Access denied: Unable to set high priority. Try running as root."
+                )
+        elif os.name == "nt":  # windows
+            current_process.nice(psutil.HIGH_PRIORITY_CLASS)
+        else:
+            raise OSError("Unsupported operating system")
 
     def execute(self, test_func: Callable, tasksets: Sequence[Taskset]) -> None:
         """多进程进行可调度性测试"""
