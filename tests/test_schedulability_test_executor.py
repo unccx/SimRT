@@ -4,7 +4,8 @@ from pathlib import Path
 from simrt import PlatformInfo
 from simrt.core.task import PeriodicTask, TaskInfo
 from simrt.generator.task_factory import Taskset
-from simrt.utils.schedulability_analyzer import SchedulabilityAnalyzer, TestFactory
+from simrt.utils.schedulability_analyzer import SchedulabilityAnalyzer
+from simrt.utils.schedulability_test import TestFactory
 from simrt.utils.schedulability_test_executor import (
     ParallelStrategy,
     SchedulabilityTestExecutor,
