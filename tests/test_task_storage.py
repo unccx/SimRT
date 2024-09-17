@@ -94,7 +94,7 @@ class TestTaskStorage(unittest.TestCase):
             self.assertEqual(i[1:], (ns, s))
 
     def test_count_tasksets_in_utilization_range(self):
-        self.task_db = TaskStorage(Path("./data/2024-03-30_11-48-46/data.sqlite"))
+        self.task_db = TaskStorage(Path("./data/test.sqlite"))
         utilization_distribution = []
         for l, r in zip(range(0, 10), range(1, 11)):
             count = self.task_db.count_tasksets_in_utilization_range(

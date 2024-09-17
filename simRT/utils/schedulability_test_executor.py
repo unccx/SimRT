@@ -18,6 +18,7 @@ from simRT.utils.task_storage import TaskStorage
 class PersistenceStrategy(ABC):
     def __init__(self, data_path: Path) -> None:
         self.data_path = data_path
+        self.data_path.mkdir(parents=True, exist_ok=True)
 
     @abstractmethod
     def connect(self) -> None:
