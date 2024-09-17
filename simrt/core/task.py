@@ -97,7 +97,8 @@ class PeriodicTask(GenericTask):
             self.jobs.append(job)
             yield self.env.timeout(self.period)
 
+
 TYPE_MAPPING: dict[str, type] = {
-    "<class 'simRT.core.task.PeriodicTask'>": PeriodicTask,  # PeriodicTask 是一个有效的类型
+    "<class 'simrt.core.task.PeriodicTask'>": PeriodicTask,  # PeriodicTask 是一个有效的类型
     # 添加其他类型的映射
 }

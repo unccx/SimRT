@@ -1,9 +1,9 @@
 import unittest
 from pathlib import Path
 
-from simRT.core.task import PeriodicTask, TaskInfo
-from simRT.generator.task_factory import Taskset
-from simRT.utils.task_storage import TaskStorage
+from simrt.core.task import PeriodicTask, TaskInfo
+from simrt.generator.task_factory import Taskset
+from simrt.utils.task_storage import TaskStorage
 
 
 class TestTaskStorage(unittest.TestCase):

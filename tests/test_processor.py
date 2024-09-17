@@ -4,7 +4,7 @@ import simpy
 from simpy.core import SimTime
 from simpy.resources.resource import Preempted, Release, Request
 
-from simRT.core import PlatformInfo, ProcessorPlatform, ProcessorRequest, SortedQueue
+from simrt.core import PlatformInfo, ProcessorPlatform, ProcessorRequest, SortedQueue
 
 
 class TestPlatformInfo(unittest.TestCase):

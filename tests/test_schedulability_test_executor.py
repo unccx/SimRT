@@ -1,11 +1,11 @@
 import unittest
 from pathlib import Path
 
-from simRT import PlatformInfo
-from simRT.core.task import PeriodicTask, TaskInfo
-from simRT.generator.task_factory import Taskset
-from simRT.utils.schedulability_analyzer import SchedulabilityAnalyzer, TestFactory
-from simRT.utils.schedulability_test_executor import (
+from simrt import PlatformInfo
+from simrt.core.task import PeriodicTask, TaskInfo
+from simrt.generator.task_factory import Taskset
+from simrt.utils.schedulability_analyzer import SchedulabilityAnalyzer, TestFactory
+from simrt.utils.schedulability_test_executor import (
     ParallelStrategy,
     SchedulabilityTestExecutor,
     SerialStrategy,

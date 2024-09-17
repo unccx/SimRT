@@ -1,4 +1,4 @@
-name: simRT
+name: simrt
 channels:
   - conda-forge
   - defaults

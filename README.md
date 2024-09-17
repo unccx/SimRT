@@ -19,7 +19,7 @@
 
 ## 简介
 
-simRT 是一个用于模拟实时调度算法的调度过程的 Python 库。
+SimRT 是一个用于模拟实时调度算法的调度过程的 Python 库。
 - 支持在异构处理器平台上的 job level 迁移抢占
 - 支持随机生成实时任务集，以及从给定大量任务中随机挑选任务组成任务集
 - 实现 Global-EDF 充分性可调度性测试
@@ -30,30 +30,30 @@ simRT 是一个用于模拟实时调度算法的调度过程的 Python 库。
 ### 通过 pip 安装
 
 ```shell
-pip install git+https://github.com/unccx/simRT.git
+pip install git+https://github.com/unccx/SimRT.git
 ```
 
 ### 从源代码安装
 
 1. 克隆这个仓库：
    ```shell
-   git clone https://github.com/unccx/simRT.git
+   git clone https://github.com/unccx/SimRT.git
    ```
 2. 进入项目目录：
    ```shell
-   cd simRT
+   cd SimRT
    ```
 3. 安装依赖：
    - 使用 conda/mamba 安装依赖
    ```shell
    conda env create -f .\environment.yml
-   conda activate simRT
+   conda activate simrt
    ```
 
 ## 使用方法
 模拟周期性实时任务的调度过程，判断模拟过程中是否出现错过任务期限
 ```python
-from simRT import TaskInfo, Simulator, PeriodicTask
+from simrt import TaskInfo, Simulator, PeriodicTask
 
 # 每个任务使用三元组 (C, D, T) 来刻画
 # 其中 C 是最坏执行时间、D 是相对截止时间、T 是周期
@@ -80,11 +80,11 @@ print(ret)
 
 ### 报告问题
 
-- 如果你发现了 bug 或有改进建议，请首先检查 [issue 列表](https://github.com/unccx/simRT/issues) 以确定是否已有相关的报告。
-- 如果没有，请在 [issue 页面](https://github.com/unccx/simRT/issues/new) 创建一个新的 issue，描述问题的详细信息和复现步骤。
+- 如果你发现了 bug 或有改进建议，请首先检查 [issue 列表](https://github.com/unccx/SimRT/issues) 以确定是否已有相关的报告。
+- 如果没有，请在 [issue 页面](https://github.com/unccx/SimRT/issues/new) 创建一个新的 issue，描述问题的详细信息和复现步骤。
 
 ### 提出特性请求
-- 如果你有新功能的想法或建议，请在 [issue 页面](https://github.com/unccx/simRT/issues/new) 提出一个新的 issue，并详细描述你希望添加的功能和它的用途。
+- 如果你有新功能的想法或建议，请在 [issue 页面](https://github.com/unccx/SimRT/issues/new) 提出一个新的 issue，并详细描述你希望添加的功能和它的用途。
 
 ### 贡献代码
 
@@ -93,7 +93,7 @@ print(ret)
 2. 克隆你自己的仓库到本地：
 
   ```bash
-  git clone https://github.com/你的用户名/simRT.git
+  git clone https://github.com/你的用户名/SimRT.git
   ```
 
 3. 在你的本地仓库中，创建一个新的分支来进行你的更改：
@@ -118,7 +118,7 @@ print(ret)
   ```
 
 
-7. 访问 [Pull Requests 页面](https://github.com/unccx/simRT/pulls) 并创建一个新的 Pull Request。描述你的更改，并确保在提交时指明你的分支。
+7. 访问 [Pull Requests 页面](https://github.com/unccx/SimRT/pulls) 并创建一个新的 Pull Request。描述你的更改，并确保在提交时指明你的分支。
 
 ### 代码风格和规范
 

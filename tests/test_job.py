@@ -5,8 +5,8 @@ from unittest import mock
 
 import simpy
 
-import simRT
-from simRT.core.job import Job
+import simrt
+from simrt.core.job import Job
 
 
 class TestJob(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestJob(unittest.TestCase):
     def setUp(self) -> None:
         self.speed_list = [2, 1]
         self.env = simpy.Environment()
-        self.platform = simRT.ProcessorPlatform(self.env, self.speed_list)
+        self.platform = simrt.ProcessorPlatform(self.env, self.speed_list)
 
         triplets = [(25, 50, 50), (30, 75, 75)]
 

@@ -1,8 +1,8 @@
 import unittest
 
-from simRT.core.processor import PlatformInfo
-from simRT.core.task import TaskInfo
-from simRT.generator.task_factory import (
+from simrt.core.processor import PlatformInfo
+from simrt.core.task import TaskInfo
+from simrt.generator.task_factory import (
     PeriodicTaskFactory,
     UtilizationGenerationAlgorithm,
 )

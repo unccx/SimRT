@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from re import U
 from typing import Callable, Optional, Sequence, Type
 
-from simRT.core.processor import PlatformInfo, SpeedType
-from simRT.core.task import GenericTask, PeriodicTask, TaskInfo
-from simRT.generator.task_factory import (
+from ..core.processor import PlatformInfo, SpeedType
+from ..core.task import GenericTask, PeriodicTask, TaskInfo
+from ..generator.task_factory import (
     AbstractTaskFactory,
     PeriodicTaskFactory,
     UtilizationGenerationAlgorithm,

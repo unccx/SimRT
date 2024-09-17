@@ -1,14 +1,14 @@
 import unittest
 from random import uniform
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock
 
-from simRT.core.processor import PlatformInfo, SpeedType
-from simRT.core.task import PeriodicTask, TaskInfo
-from simRT.generator.task_factory import (
+from simrt.core.processor import PlatformInfo
+from simrt.core.task import PeriodicTask, TaskInfo
+from simrt.generator.task_factory import (
     PeriodicTaskFactory,
     UtilizationGenerationAlgorithm,
 )
-from simRT.generator.taskset_generator import (
+from simrt.generator.taskset_generator import (
     TasksetFactory,
     TasksetGenerator,
     TaskSubsetFactory,

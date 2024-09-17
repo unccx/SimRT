@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, Optional
 
 from tqdm import tqdm
 
-from simRT.core.processor import SpeedType
-from simRT.core.task import TYPE_MAPPING, TaskInfo
+from ..core.processor import SpeedType
+from ..core.task import TYPE_MAPPING, TaskInfo
 
 if TYPE_CHECKING:
-    from simRT.generator.taskset_generator import Taskset
+    from ..generator.taskset_generator import Taskset
 
 
 class TaskStorage:

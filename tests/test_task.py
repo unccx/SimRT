@@ -4,8 +4,8 @@ from unittest import mock
 
 import simpy
 
-import simRT
-from simRT.core.task import GenericTask, PeriodicTask, TaskInfo
+import simrt
+from simrt.core.task import GenericTask, PeriodicTask, TaskInfo
 
 
 class TestTaskInfo(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestTaskInfo(unittest.TestCase):
         self.assertEqual(task_info.period, 20)
 
         self.env = simpy.Environment()
-        self.platform = simRT.ProcessorPlatform(self.env)
+        self.platform = simrt.ProcessorPlatform(self.env)
 
         task = task_info.as_task(self.platform)
         self.assertIsInstance(task, PeriodicTask)
@@ -32,7 +32,7 @@ class TestPeriodicTask(unittest.TestCase):
     def init(self, speed_list, triplets):
 
         self.speed_list = speed_list
-        self.platform = simRT.ProcessorPlatform(self.env, self.speed_list)
+        self.platform = simrt.ProcessorPlatform(self.env, self.speed_list)
 
         self.hyper_period = 1
         self.tasks = []

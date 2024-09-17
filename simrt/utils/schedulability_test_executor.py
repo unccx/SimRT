@@ -8,11 +8,11 @@ from typing import Callable, Sequence
 import psutil
 from tqdm import tqdm
 
-from simRT import PlatformInfo
-from simRT.core.task import TaskInfo
-from simRT.generator.task_factory import Taskset
-from simRT.utils.schedulability_analyzer import SchedulabilityAnalyzer
-from simRT.utils.task_storage import TaskStorage
+from ..core.processor import PlatformInfo
+from ..core.task import TaskInfo
+from ..generator.task_factory import Taskset
+from ..utils.schedulability_analyzer import SchedulabilityAnalyzer
+from ..utils.task_storage import TaskStorage
 
 
 class PersistenceStrategy(ABC):

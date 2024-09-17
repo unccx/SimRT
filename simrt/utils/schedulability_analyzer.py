@@ -6,9 +6,9 @@ from typing import Optional, Sequence
 from simpy.core import SimTime
 from tqdm import trange
 
-from simRT.core import Simulator
-from simRT.core.processor import PlatformInfo
-from simRT.core.task import TaskInfo
+from ..core import Simulator
+from ..core.processor import PlatformInfo
+from ..core.task import TaskInfo
 
 
 class SchedulabilityTest(ABC):

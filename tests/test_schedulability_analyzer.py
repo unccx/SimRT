@@ -1,15 +1,15 @@
 import unittest
 from unittest.mock import patch
 
-from simRT.core import Simulator
-from simRT.core.processor import PlatformInfo
-from simRT.core.task import PeriodicTask, TaskInfo
-from simRT.generator.taskset_generator import (
+from simrt.core import Simulator
+from simrt.core.processor import PlatformInfo
+from simrt.core.task import PeriodicTask, TaskInfo
+from simrt.generator.taskset_generator import (
     TasksetFactory,
     TasksetGenerator,
     TaskSubsetFactory,
 )
-from simRT.utils.schedulability_analyzer import (
+from simrt.utils.schedulability_analyzer import (
     GlobalEDFTest,
     SchedulabilityAnalyzer,
     SimulationTest,
@@ -174,56 +174,3 @@ class TestSchedulabilityAnalyzer(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
-# import unittest
-
-# from simRT import SchedulabilityAnalyzer
-# from simRT.core.model import Simulator
-# from simRT.core.processor import PlatformInfo
-# from simRT.core.task import PeriodicTask, TaskInfo
-# from simRT.generator import PeriodicTaskFactory, Taskset
-
-
-# class TestSchedulability(unittest.TestCase):
-
-#     def setUp(self) -> None:
-#         self.task_gen = PeriodicTaskFactory(
-#             task_type=PeriodicTask,
-#             period_bound=(1, 10),
-#             platform_info=[1, 0.5],
-#             implicit_deadline=True,
-#         )
-#         self.num_task = len(self.task_gen.platform_info.speed_list) * 2 + 1
-
-
-#     def test_G_EDF_sufficient_test_case2(self):
-#         num_task_set = 1000
-#         tasksets = self.task_gen.generate_taskset(
-#             system_utilization=0.99, num_task=self.num_task, num_task_set=num_task_set
-#         )
-#         success = 0
-#         sim_success = 0
-#         sim_fail = 0
-#         for i, taskset in enumerate(tasksets):
-#             sim = Simulator(taskset, self.task_gen.platform_info)
-#             sim_schedulability = sim.run(show_progress=True)
-#             schedulability = SchedulabilityAnalyzer.G_EDF_sufficient_test(
-#                 Gamma=taskset, processors=self.task_gen.platform_info
-#             )
-
-#             # print(f"[{i}] test:{schedulability}, sim:{sim_schedulability}")
-#             if schedulability is True:
-#                 success += 1
-#                 self.assertTrue(sim_schedulability)
-
-#             if sim_schedulability is False:
-#                 sim_fail += 1
-#                 self.assertFalse(schedulability)
-
-#             if sim_schedulability is True:
-#                 sim_success += 1
-
-#         self.assertEqual(sim_fail + sim_success, num_task_set)
-#         # print(f"sim success rate: {sim_success/num_task_set}")
-#         # print(f"success rate: {success/num_task_set}")

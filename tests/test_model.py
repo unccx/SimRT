@@ -1,11 +1,8 @@
 import math
 import unittest
-from asyncio import Task
 
-import simpy
-
-from simRT import Simulator
-from simRT.core.task import PeriodicTask, TaskInfo
+from simrt import Simulator
+from simrt.core.task import PeriodicTask, TaskInfo
 
 
 class TestSimulator(unittest.TestCase):
