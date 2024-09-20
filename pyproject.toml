@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simrt"
-version = "0.1.0"
+version = "0.1.1"
 description = "SimRT is a Python library designed to simulate the scheduling processes of real-time scheduling algorithms."
 authors = ["unccx <2336429253@qq.com>"]
 readme = "README.md"
