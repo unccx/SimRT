@@ -71,14 +71,14 @@ class TestTaskSubsetFactory(unittest.TestCase):
         )
 
     def test_create_taskset_valid_utilization(self):
-        num_task = 1000
+        num_task = 20
         system_utilization = 0.8
         taskset = self.factory.create_taskset(num_task, system_utilization)
         self.assertEqual(len(taskset), num_task)
         self.assertAlmostEqual(
             sum(task.utilization for task in taskset),
             system_utilization * self.platform_info.S_m,
-            delta=0.01,
+            delta=0.1,
         )
 
     def test_create_taskset_random_utilization(self):

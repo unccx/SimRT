@@ -109,12 +109,15 @@ class TaskSubsetFactory(AbstractTasksetFactory):
         else:
             assert 0 < system_utilization <= 1, "System utilization must be in (0,1]"
 
-        taskset_utilization = system_utilization * self.platform_info.S_m
-        utilizations = self.utilization_algorithm(
-            taskset_utilization, num_task, self.platform_info.fastest_speed
-        )
+        while True:
 
-        return [self._select_task(u) for u in utilizations]
+            taskset_utilization = system_utilization * self.platform_info.S_m
+            utilizations = self.utilization_algorithm(
+                taskset_utilization, num_task, self.platform_info.fastest_speed
+            )
+            taskset = [self._select_task(u) for u in utilizations]
+            if len(taskset) == len(set(taskset)):
+                return taskset
 
 
 class TasksetGenerator:
