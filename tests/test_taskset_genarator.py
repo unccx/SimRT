@@ -1,6 +1,9 @@
+import random
 import unittest
 from random import uniform
 from unittest.mock import MagicMock
+
+from tqdm import trange
 
 from simrt.core.processor import PlatformInfo
 from simrt.core.task import PeriodicTask, TaskInfo
@@ -176,3 +179,7 @@ class TestTasksetGenerator(unittest.TestCase):
             0.8,
             delta=0.001,
         )
+        tasksets = []
+        for i in trange(5000):
+            taskset = self.generator.generate_taskset(num_task=5)
+            tasksets.append(taskset)

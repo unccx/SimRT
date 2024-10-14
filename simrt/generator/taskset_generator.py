@@ -104,13 +104,13 @@ class TaskSubsetFactory(AbstractTasksetFactory):
         num_task: int,
         system_utilization: Optional[float] = None,
     ) -> Taskset:
-        if system_utilization is None:
+        flag: bool = system_utilization is None
+        if flag:
             system_utilization = random.uniform(1e-10, 1)
         else:
             assert 0 < system_utilization <= 1, "System utilization must be in (0,1]"
 
         while True:
-
             taskset_utilization = system_utilization * self.platform_info.S_m
             utilizations = self.utilization_algorithm(
                 taskset_utilization, num_task, self.platform_info.fastest_speed
@@ -118,6 +118,14 @@ class TaskSubsetFactory(AbstractTasksetFactory):
             taskset = [self._select_task(u) for u in utilizations]
             if len(taskset) == len(set(taskset)):
                 return taskset
+            elif flag:
+                system_utilization = random.uniform(1e-10, 1)
+            else:
+                # 当给定的 system_utilization 过低时，会导致产生的utilizations很可能落到同一个slot
+                min_slot = [u for u in utilizations if u < self.tasks[0].utilization]
+                assert (
+                    len(min_slot) < 2
+                ), "The given system_utilization parameter is too low"
 
 
 class TasksetGenerator:
